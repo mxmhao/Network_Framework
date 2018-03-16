@@ -69,7 +69,7 @@ static NetworkManager *shareManager = nil;
 {
     _manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     __weak typeof(self) weakSelf = self;
-    //这里必须用__block，不然下面block中的task不可为nil
+    //这里必须用__block，不然下面block中的task可能为nil
     __block NSURLSessionDataTask *task = nil;
     task = [_manager GET:URLString parameters:parameters progress:downloadProgress completionHandler:^(NSURLResponse * _Nonnull response, id _Nullable responseObject, NSError * _Nullable error) {
         TaskId tid = @(task.taskIdentifier);
