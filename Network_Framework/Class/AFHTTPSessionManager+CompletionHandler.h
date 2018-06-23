@@ -2,7 +2,7 @@
 //  AFHTTPSessionManager+CompletionHandler.h
 //  Network_Framework
 //
-//  Created by noontec on 2018/3/1.
+//  Created by mxm on 2018/3/1.
 //  Copyright © 2018年 mxm. All rights reserved.
 //
 //  AFN简化分类
@@ -29,12 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
     progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
     completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
-
-- (nullable NSURLSessionUploadTask *)POST:(NSString *)URLString
-                    parameters:(id)parameters
- constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
-      progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
- completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+//上传的另外写一个工具类
+//- (nullable NSURLSessionUploadTask *)POST:(NSString *)URLString
+//                    parameters:(id)parameters
+// constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
+//      progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
+// completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
 
 - (nullable NSURLSessionDataTask *)PUT:(NSString *)URLString

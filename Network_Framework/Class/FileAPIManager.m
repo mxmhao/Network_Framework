@@ -2,7 +2,7 @@
 //  RequestManager.m
 //  Network_Framework
 //
-//  Created by noontec on 2018/2/27.
+//  Created by mxm on 2018/2/27.
 //  Copyright © 2018年 mxm. All rights reserved.
 //
 //  此类主要是组装请求参数，同一模块在一个类中写多个类方法，多个模块写成多个类，这个主要是有开发者自己去发挥，此类只是一个例子，此类相当于mvvm中的ViewModel
@@ -31,14 +31,14 @@ static NSString *const RenameFileAPI = @"api/rename_file";
         path, @"path",
         sorting, @"sort",
     nil];
-    return [APIManager callPost:GetFilesAPI params:params progress:uploadProgress successHandler:success failureHandler:failure];
+    return [APIManager callPost:GetFilesAPI params:params dataHandler:nil successHandler:success failureHandler:false progress:uploadProgress];
 }
 
 + (APIManager *)deleteFile:(NSString *)file successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
 {
     NSDictionary *params = @{@"path": file};
     NSMutableDictionary *par = [NSMutableDictionary dictionaryWithObjectsAndKeys:file, @"path", nil];
-    return [APIManager callPost:DeleteFileAPI params:params progress:nil successHandler:success failureHandler:failure];
+    return [APIManager callPost:DeleteFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
 }
 
 + (APIManager *)renameFile:(NSString *)oldName newName:(NSString *)newName successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
@@ -51,7 +51,7 @@ static NSString *const RenameFileAPI = @"api/rename_file";
                                 oldName, @"oldName",
                                 newName, @"newName",
                                 nil];
-    return [APIManager callPost:RenameFileAPI params:params progress:nil successHandler:success failureHandler:failure];
+    return [APIManager callPost:RenameFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
 }
 
 @end

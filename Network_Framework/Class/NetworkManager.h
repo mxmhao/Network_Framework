@@ -2,7 +2,7 @@
 //  APIManager.h
 //  Network_Framework
 //
-//  Created by noontec on 2018/2/27.
+//  Created by mxm on 2018/2/27.
 //  Copyright © 2018年 mxm. All rights reserved.
 //
 //  请求网络，取消网络请求
@@ -28,16 +28,26 @@ typedef NSNumber* TaskId;
          progress:(nullable void (^)(NSProgress *_Nonnull downloadProgress))downloadProgress
 completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
+- (TaskId)callHead:(NSString *)URLString
+        parameters:(nullable id)parameters
+ completionHandler:(nullable void (^)(TaskId _Nullable taskId, NSURLResponse *response, NSError * _Nullable error))completionHandler;
+
 - (TaskId)callPost:(NSString *)URLString
             params:(nullable NSDictionary *)params
           progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
-     completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+ completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
-- (TaskId)callUpload:(NSString *)URLString
-              params:(nullable NSDictionary *)params
-    constructingBodyWithBlock:(nullable void (^)(id <AFMultipartFormData> formData))block
-    progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
-    completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+- (TaskId)callPut:(NSString *)URLString
+       parameters:(nullable id)parameters
+completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
+- (TaskId)callPatch:(NSString *)URLString
+         parameters:(nullable id)parameters
+  completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
+- (TaskId)callDelete:(NSString *)URLString
+          parameters:(nullable id)parameters
+   completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
 - (void)cancelTaskWithId:(TaskId)taskId;
 

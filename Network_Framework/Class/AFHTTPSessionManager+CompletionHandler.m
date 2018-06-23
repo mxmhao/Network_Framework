@@ -2,7 +2,7 @@
 //  AFHTTPSessionManager+CompletionHandler.m
 //  Network_Framework
 //
-//  Created by noontec on 2018/3/1.
+//  Created by mxm on 2018/3/1.
 //  Copyright © 2018年 mxm. All rights reserved.
 //
 
@@ -16,6 +16,21 @@
     completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler
 {
     NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"GET" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:downloadProgress completionHandler:completionHandler];
+    
+    [dataTask resume];
+    
+    return dataTask;
+}
+
+- (NSURLSessionDataTask *)HEAD:(NSString *)URLString
+                    parameters:(id)parameters
+             completionHandler:(nullable void (^)(NSURLResponse *response, NSError * _Nullable error))completionHandler
+{
+    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"HEAD" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error) {
+        if (completionHandler) {
+            completionHandler(response, error);
+        }
+    }];
     
     [dataTask resume];
     
@@ -67,21 +82,6 @@
     return dataTask;
 }
 
-- (NSURLSessionDataTask *)HEAD:(NSString *)URLString
-                    parameters:(id)parameters
-    completionHandler:(nullable void (^)(NSURLResponse *response, NSError * _Nullable error))completionHandler
-{
-    NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"HEAD" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:nil completionHandler:^(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error) {
-        if (completionHandler) {
-            completionHandler(response, error);
-        }
-    }];
-    
-    [dataTask resume];
-    
-    return dataTask;
-}
-
 - (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
        URLString:(NSString *)URLString
       parameters:(nullable id)parameters
@@ -110,6 +110,7 @@ completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable respo
                    completionHandler:completionHandler];
 }
 
+/*
 - (NSURLSessionUploadTask *)POST:(NSString *)URLString
                     parameters:(id)parameters
  constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
@@ -134,6 +135,6 @@ completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable respo
     NSURLSessionUploadTask *task = [self uploadTaskWithStreamedRequest:request progress:uploadProgress completionHandler:completionHandler];
     [task resume];
     return task;
-}
+}//*/
 
 @end
