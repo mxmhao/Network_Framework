@@ -70,7 +70,7 @@ static NetworkManager *shareManager = nil;
 - (TaskId)callGet:(NSString *)URLString
        parameters:(id)parameters
          progress:(void (^)(NSProgress * _Nonnull))downloadProgress
-completionHandler:(void (^)(TaskId _Nonnull, id _Nullable, NSError * _Nullable))completionHandler
+completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
 {
     _manager.responseSerializer = [AFHTTPResponseSerializer serializer];//测试
     __weak typeof(self) weakSelf = self;
@@ -110,13 +110,13 @@ completionHandler:(void (^)(TaskId _Nonnull, id _Nullable, NSError * _Nullable))
 }
 
 - (TaskId)callPost:(NSString *)URLString
-            params:(nullable NSDictionary *)params
-          progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
- completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler
+        parameters:(id)parameters
+          progress:(void (^)(NSProgress * _Nonnull))uploadProgress
+ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
 {
     __weak typeof(self) weakSelf = self;
     __block NSURLSessionDataTask *task = nil;
-    task = [_manager POST:URLString parameters:params progress:uploadProgress completionHandler:^(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error) {
+    task = [_manager POST:URLString parameters:parameters progress:uploadProgress completionHandler:^(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error) {
         TaskId tid = @(task.taskIdentifier);
         if (completionHandler) {
             completionHandler(tid, responseObject, error);

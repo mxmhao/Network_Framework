@@ -33,7 +33,7 @@ completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable respo
  completionHandler:(nullable void (^)(TaskId _Nullable taskId, NSURLResponse *response, NSError * _Nullable error))completionHandler;
 
 - (TaskId)callPost:(NSString *)URLString
-            params:(nullable NSDictionary *)params
+        parameters:(nullable id)parameters
           progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
  completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 

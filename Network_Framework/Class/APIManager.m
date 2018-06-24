@@ -13,6 +13,7 @@
 #import "DomainManager.h"
 
 typedef NS_ENUM(NSInteger, RetryTag) {
+    RetryTagNone,
     RetryTagGet,
     RetryTagHead,
     RetryTagPost,
@@ -65,14 +66,16 @@ id callTargetActionWithDataForResult(id target, SEL action, id data)
 
 @implementation APIManager
 {
+    //
     NSString *_URLString;
     NSDictionary *_params;
-    void (^_progress)(NSProgress * _Nonnull);
-    //
-    TaskId _taskId;
     HandlerTargetAction *_successHandler;
     HandlerTargetAction *_failureHandler;
     HandlerTargetAction *_dataHandler;
+    void (^_progress)(NSProgress * _Nonnull);
+    //取消时需要用到
+    TaskId _taskId;
+    //重试时需要用到
     RetryTag _retryTag;
 }
 
@@ -101,13 +104,24 @@ static Class<ParamsSignatureDelegate> _delegate;
     return _delegate;
 }
 
-- (instancetype)initWithSuccessHandler:(nullable HandlerTargetAction *)success
-                        failureHandler:(nullable HandlerTargetAction *)failure
+- (instancetype)initWithURLString:(NSString *)URLString
+                           params:(nullable NSDictionary *)params
+                      dataHandler:(nullable HandlerTargetAction *)dataHandler
+                   successHandler:(nullable HandlerTargetAction *)success
+                   failureHandler:(nullable HandlerTargetAction *)failure
+                         progress:(nullable void (^)(NSProgress * _Nonnull))progress
 {
     self = [super init];
     if (self) {
+        _URLString = URLString;
+        _params = params;
+        _dataHandler = dataHandler;
         _successHandler = success;
         _failureHandler = failure;
+        _progress = [progress copy];
+        _retryTag = RetryTagNone;
+//        NSProxy *pro;//测试
+//        NSObject *obj;
     }
     return self;
 }
@@ -117,26 +131,17 @@ static Class<ParamsSignatureDelegate> _delegate;
     NSLog(@"%@ -- 释放", [self class]);
 }
 
-+ (void)sig
-{
-//    NSProxy *pro;
-//    NSObject *obj;
-}
-
 #pragma mark -
 + (instancetype)callGet:(NSString *)URLString
-                  params:(nullable NSDictionary *)params
+                 params:(nullable NSDictionary *)params
             dataHandler:(nullable HandlerTargetAction *)dataHandler
-          successHandler:(nullable HandlerTargetAction *)success
-          failureHandler:(nullable HandlerTargetAction *)failure
+         successHandler:(nullable HandlerTargetAction *)success
+         failureHandler:(nullable HandlerTargetAction *)failure
                progress:(nullable void (^)(NSProgress * _Nonnull))downloadProgress
 {
     //当前网络请求处理的保存者
-    APIManager *aManager = [[self alloc] initWithSuccessHandler:success failureHandler:failure];
-    aManager->_params = params;
-    aManager->_dataHandler = dataHandler;
-    aManager->_progress = [downloadProgress copy];
-    //开始请求网络
+    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:downloadProgress];
+    //请求网络
     [aManager callGet];
     
     return aManager;
@@ -147,8 +152,7 @@ static Class<ParamsSignatureDelegate> _delegate;
           successHandler:(HandlerTargetAction *)success
           failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithSuccessHandler:success failureHandler:failure];
-    aManager->_params = params;
+    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
     [aManager callGet];
     
     return aManager;
@@ -161,10 +165,7 @@ static Class<ParamsSignatureDelegate> _delegate;
           failureHandler:(nullable HandlerTargetAction *)failure
                 progress:(void (^)(NSProgress * _Nonnull))uploadProgress
 {
-    APIManager *aManager = [[self alloc] initWithSuccessHandler:success failureHandler:failure];
-    aManager->_params = params;
-    aManager->_dataHandler = dataHandler;
-    aManager->_progress = [uploadProgress copy];
+    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:uploadProgress];
     [aManager callPost];
     
     return aManager;
@@ -176,9 +177,7 @@ static Class<ParamsSignatureDelegate> _delegate;
          successHandler:(HandlerTargetAction *)success
          failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithSuccessHandler:success failureHandler:failure];
-    aManager->_params = params;
-    aManager->_dataHandler = dataHandler;
+    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
     [aManager callPut];
     
     return aManager;
@@ -190,9 +189,7 @@ static Class<ParamsSignatureDelegate> _delegate;
            successHandler:(HandlerTargetAction *)success
            failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithSuccessHandler:success failureHandler:failure];
-    aManager->_params = params;
-    aManager->_dataHandler = dataHandler;
+    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
     [aManager callPatch];
     
     return aManager;
@@ -204,9 +201,7 @@ static Class<ParamsSignatureDelegate> _delegate;
             successHandler:(HandlerTargetAction *)success
             failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithSuccessHandler:success failureHandler:failure];
-    aManager->_params = params;
-    aManager->_dataHandler = dataHandler;
+    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
     [aManager callDelete];
     
     return aManager;
@@ -223,7 +218,6 @@ static Class<ParamsSignatureDelegate> _delegate;
     
     _retryTag = RetryTagGet;
     __weak typeof(self) this = self;
-    //开始请求网络
     _taskId = [shareManager callGet:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
@@ -232,7 +226,6 @@ static Class<ParamsSignatureDelegate> _delegate;
 
 - (void)callHead
 {
-    //一些数据加签或加密的工作
     NSDictionary *sigParams = _params;
     if (nil != _delegate) {
         sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
@@ -240,7 +233,6 @@ static Class<ParamsSignatureDelegate> _delegate;
     
     _retryTag = RetryTagHead;
     __weak typeof(self) this = self;
-    //开始请求网络
     _taskId = [shareManager callHead:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams  completionHandler:^(TaskId _Nullable taskId, NSURLResponse * _Nonnull response, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:response error:error];
     }];
@@ -249,7 +241,6 @@ static Class<ParamsSignatureDelegate> _delegate;
 
 - (void)callPost
 {
-    //一些数据加签或加密的工作
     NSDictionary *sigParams = _params;
     if (nil != _delegate) {
         sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
@@ -257,7 +248,7 @@ static Class<ParamsSignatureDelegate> _delegate;
     
     _retryTag = RetryTagPost;
     __weak typeof(self) this = self;
-    _taskId = [shareManager callPost:[DomainManager absoluteURLStringWithURLString:_URLString] params:sigParams progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
+    _taskId = [shareManager callPost:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
@@ -265,7 +256,6 @@ static Class<ParamsSignatureDelegate> _delegate;
 
 - (void)callPut
 {
-    //一些数据加签或加密的工作
     NSDictionary *sigParams = _params;
     if (nil != _delegate) {
         sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
@@ -273,7 +263,6 @@ static Class<ParamsSignatureDelegate> _delegate;
     
     _retryTag = RetryTagPut;
     __weak typeof(self) this = self;
-    //开始请求网络
     _taskId = [shareManager callPut:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
@@ -282,16 +271,13 @@ static Class<ParamsSignatureDelegate> _delegate;
 
 - (void)callPatch
 {
-    //一些数据加签或加密的工作
     NSDictionary *sigParams = _params;
     if (nil != _delegate) {
         sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
     }
     
     _retryTag = RetryTagPatch;
-    
     __weak typeof(self) this = self;
-    //开始请求网络
     _taskId = [shareManager callPatch:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
@@ -300,7 +286,6 @@ static Class<ParamsSignatureDelegate> _delegate;
 
 - (void)callDelete
 {
-    //一些数据加签或加密的工作
     NSDictionary *sigParams = _params;
     if (nil != _delegate) {
         sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
@@ -308,7 +293,6 @@ static Class<ParamsSignatureDelegate> _delegate;
     
     _retryTag = RetryTagDelete;
     __weak typeof(self) this = self;
-    //开始请求网络
     _taskId = [shareManager callDelete:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
@@ -321,7 +305,7 @@ static Class<ParamsSignatureDelegate> _delegate;
     
     if (error) {
         if (nil == _failureHandler) return;
-        callTargetActionWithData(_failureHandler.target, _failureHandler.action, error);//方式二
+        callTargetActionWithData(_failureHandler.target, _failureHandler.action, error);
     } else {
         if (_dataHandler) {
             responseObject = callTargetActionWithDataForResult(_dataHandler.target, _dataHandler.action, responseObject);

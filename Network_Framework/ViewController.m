@@ -66,7 +66,7 @@
 ////        NSLog(@"\n%@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
 //    }];
     
-    [APIManager callGet:@"" params:nil progress:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)]];
+    [APIManager callGet:@"" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
     _showView = nil;
 }
 
