@@ -69,4 +69,10 @@ void DictionaryThreadSecureSetObjectForKey(XMLock lock, NSMutableDictionary *dic
     XM_UnLock(lock);
 }
 
+NS_INLINE
+BOOL IsEmptyString(NSString *string)
+{
+    return nil == string || (id)kCFNull == string || string.length == 0;
+}
+
 #endif /* XMLock_h */

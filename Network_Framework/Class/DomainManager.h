@@ -5,11 +5,11 @@
 //  Created by mxm on 2018/3/1.
 //  Copyright © 2018年 mxm. All rights reserved.
 //
-//  域名管理工具类
+//  域名管理工具类，自己改造，APIManager中用到了此类获取完整的URL
 
 #import <Foundation/Foundation.h>
 
-//有些网站会有多个域名，所以用一个类来管理
+//有些网站会有多个域名，或者不同的环境有不同的域名，所以用一个类来管理
 @interface DomainManager : NSObject
 
 /**

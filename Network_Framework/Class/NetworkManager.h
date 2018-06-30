@@ -5,7 +5,7 @@
 //  Created by mxm on 2018/2/27.
 //  Copyright © 2018年 mxm. All rights reserved.
 //
-//  请求网络，取消网络请求
+//  请求网络，取消网络请求，本类只是一个简单的对AFN的封装
 
 #import <Foundation/Foundation.h>
 #import <AFNetworking/AFNetworking.h>

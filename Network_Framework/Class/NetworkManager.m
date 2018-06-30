@@ -52,6 +52,7 @@ static NetworkManager *shareManager = nil;
     if (self) {
         _manager = [AFHTTPSessionManager manager];
         _manager.requestSerializer.timeoutInterval = 15;
+        ((AFJSONResponseSerializer *)_manager.responseSerializer).removesKeysWithNullValues = YES;
         _taskDic = [NSMutableDictionary dictionaryWithCapacity:5];
         _lock = XM_CreateLock();
     }
@@ -167,7 +168,6 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
     DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
     return tid;
 }
-
 
 
 - (TaskId)callDelete:(NSString *)URLString parameters:(id)parameters completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler

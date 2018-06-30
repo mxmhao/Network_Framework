@@ -19,7 +19,7 @@ static NSString *const Domain1 = @"https://www.baidu.com/";
 
 + (void)testTimeForDomain
 {
-    
+    //可以用ping测试
 }
 
 + (NSString *)fastestDomain
