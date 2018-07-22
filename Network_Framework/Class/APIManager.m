@@ -153,7 +153,7 @@ static Class<ParamsSignatureDelegate> _delegate;
           failureHandler:(HandlerTargetAction *)failure
 {
     APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
-    [aManager callGet];
+    [aManager callHead];
     
     return aManager;
 }
