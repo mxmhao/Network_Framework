@@ -44,8 +44,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _showView = [UIView new];
-    NSLog(@"%p", _showView);
+//    _showView = [UIView new];
+//    NSLog(@"%p", _showView);
 //    UIButton *btn;
 //    [btn addTarget:self action:@selector(inief) forControlEvents:UIControlEventAllEvents];
 //    UIControlTargetAction
@@ -61,13 +61,12 @@
 //        //
 //    }];
     
-//    [[NetworkManager shareManager] callGet:@"https://www.baidu.com" parameters:nil progress:nil
-//    } completionHandler:^(TaskId  _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
-////        NSLog(@"\n%@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+//    [[NetworkManager shareManager] callGet:@"https://www.baidu.com" parameters:nil progress:nil completionHandler:^(TaskId  _Nullable taskId, id  _Nullable responseObject, NSError * _Nullable error) {
+//        NSLog(@"-->\n%@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
 //    }];
     
-    [APIManager callGet:@"" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
-    _showView = nil;
+//    [APIManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
+//    _showView = nil;
 }
 
 

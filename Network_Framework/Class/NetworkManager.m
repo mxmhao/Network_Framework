@@ -20,7 +20,7 @@
 @implementation NSURLSessionTask (Test)
 - (void)dealloc
 {
-    NSLog(@"NSURLSessionDataTask -- 释放: %p", self);
+    NSLog(@"%@ -- 释放: %p", [self class], self);
 }
 @end//*/
 
@@ -51,7 +51,7 @@ static NetworkManager *shareManager = nil;
     self = [super init];
     if (self) {
         _manager = [AFHTTPSessionManager manager];
-        _manager.requestSerializer.timeoutInterval = 15;
+//        _manager.requestSerializer.timeoutInterval = 15;
         ((AFJSONResponseSerializer *)_manager.responseSerializer).removesKeysWithNullValues = YES;
         _taskDic = [NSMutableDictionary dictionaryWithCapacity:5];
         _lock = XM_CreateLock();
@@ -73,40 +73,29 @@ static NetworkManager *shareManager = nil;
          progress:(void (^)(NSProgress * _Nonnull))downloadProgress
 completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
 {
-    _manager.responseSerializer = [AFHTTPResponseSerializer serializer];//测试
+//    _manager.responseSerializer = [AFHTTPResponseSerializer serializer];//测试
     __weak typeof(self) weakSelf = self;
     //这里必须用__block，不然下面block中的task可能为nil
     __block NSURLSessionDataTask *task = nil;
     task = [_manager GET:URLString parameters:parameters progress:downloadProgress completionHandler:^(NSURLResponse * _Nonnull response, id _Nullable responseObject, NSError * _Nullable error) {
-        TaskId tid = @(task.taskIdentifier);
+//        NSLog(@"%p", task);
+        TaskId tid = nil;
+        if (nil != task) {
+            tid = @(task.taskIdentifier);
+            __strong typeof(weakSelf) self = weakSelf;
+            DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
+        }
         if (completionHandler) {
             completionHandler(tid, responseObject, error);
         }
-        __strong typeof(weakSelf) self = weakSelf;
-        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
     }];
     
-    TaskId tid = @(task.taskIdentifier);
-    DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    return tid;
-}
-
-- (TaskId)callHead:(NSString *)URLString parameters:(id)parameters completionHandler:(void (^)(TaskId _Nullable, NSURLResponse *, NSError * _Nullable))completionHandler
-{
-    __weak typeof(self) weakSelf = self;
-    //这里必须用__block，不然下面block中的task可能为nil
-    __block NSURLSessionDataTask *task = nil;
-    task = [_manager HEAD:URLString parameters:parameters completionHandler:^(NSURLResponse * _Nonnull response, NSError * _Nullable error) {
-        TaskId tid = @(task.taskIdentifier);
-        if (completionHandler) {
-            completionHandler(tid, response, error);
-        }
-        __strong typeof(weakSelf) self = weakSelf;
-        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
-    }];
-    
-    TaskId tid = @(task.taskIdentifier);
-    DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+//    NSLog(@"%p", task);
+    TaskId tid = nil;
+    if (nil != task) {
+        tid = @(task.taskIdentifier);
+        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    }
     return tid;
 }
 
@@ -118,16 +107,47 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
     __weak typeof(self) weakSelf = self;
     __block NSURLSessionDataTask *task = nil;
     task = [_manager POST:URLString parameters:parameters progress:uploadProgress completionHandler:^(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error) {
-        TaskId tid = @(task.taskIdentifier);
+        TaskId tid = nil;
+        if (nil != task) {
+            tid = @(task.taskIdentifier);
+            __strong typeof(weakSelf) self = weakSelf;
+            DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);
+        }
         if (completionHandler) {
             completionHandler(tid, responseObject, error);
         }
-        __strong typeof(weakSelf) self = weakSelf;
-        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);
     }];
     
-    TaskId tid = @(task.taskIdentifier);
-    DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    TaskId tid = nil;
+    if (nil != task) {
+        tid = @(task.taskIdentifier);
+        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    }
+    return tid;
+}
+
+- (TaskId)callHead:(NSString *)URLString parameters:(id)parameters completionHandler:(void (^)(TaskId _Nullable, NSURLResponse *, NSError * _Nullable))completionHandler
+{
+    __weak typeof(self) weakSelf = self;
+    //这里必须用__block，不然下面block中的task可能为nil
+    __block NSURLSessionDataTask *task = nil;
+    task = [_manager HEAD:URLString parameters:parameters completionHandler:^(NSURLResponse * _Nonnull response, id _Nullable responseObject, NSError * _Nullable error) {
+        TaskId tid = nil;
+        if (nil != task) {
+            tid = @(task.taskIdentifier);
+            __strong typeof(weakSelf) self = weakSelf;
+            DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
+        }
+        if (completionHandler) {
+            completionHandler(tid, response, error);
+        }
+    }];
+    
+    TaskId tid = nil;
+    if (nil != task) {
+        tid = @(task.taskIdentifier);
+        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    }
     return tid;
 }
 
@@ -137,16 +157,22 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
     //这里必须用__block，不然下面block中的task可能为nil
     __block NSURLSessionDataTask *task = nil;
     task = [_manager PUT:URLString parameters:parameters completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-        TaskId tid = @(task.taskIdentifier);
+        TaskId tid = nil;
+        if (nil != task) {
+            tid = @(task.taskIdentifier);
+            __strong typeof(weakSelf) self = weakSelf;
+            DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
+        }
         if (completionHandler) {
             completionHandler(tid, responseObject, error);
         }
-        __strong typeof(weakSelf) self = weakSelf;
-        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
     }];
     
-    TaskId tid = @(task.taskIdentifier);
-    DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    TaskId tid = nil;
+    if (nil != task) {
+        tid = @(task.taskIdentifier);
+        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    }
     return tid;
 }
 
@@ -156,16 +182,22 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
     //这里必须用__block，不然下面block中的task可能为nil
     __block NSURLSessionDataTask *task = nil;
     task = [_manager PATCH:URLString parameters:parameters completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-        TaskId tid = @(task.taskIdentifier);
+        TaskId tid = nil;
+        if (nil != task) {
+            tid = @(task.taskIdentifier);
+            __strong typeof(weakSelf) self = weakSelf;
+            DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
+        }
         if (completionHandler) {
             completionHandler(tid, responseObject, error);
         }
-        __strong typeof(weakSelf) self = weakSelf;
-        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
     }];
     
-    TaskId tid = @(task.taskIdentifier);
-    DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    TaskId tid = nil;
+    if (nil != task) {
+        tid = @(task.taskIdentifier);
+        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    }
     return tid;
 }
 
@@ -176,16 +208,22 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
     //这里必须用__block，不然下面block中的task可能为nil
     __block NSURLSessionDataTask *task = nil;
     task = [_manager DELETE:URLString parameters:parameters completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-        TaskId tid = @(task.taskIdentifier);
+        TaskId tid = nil;
+        if (nil != task) {
+            tid = @(task.taskIdentifier);
+            __strong typeof(weakSelf) self = weakSelf;
+            DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
+        }
         if (completionHandler) {
             completionHandler(tid, responseObject, error);
         }
-        __strong typeof(weakSelf) self = weakSelf;
-        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);//实验证明，此操作之后会释放task
     }];
     
-    TaskId tid = @(task.taskIdentifier);
-    DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    TaskId tid = nil;
+    if (nil != task) {
+        tid = @(task.taskIdentifier);
+        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
+    }
     return tid;
 }
 

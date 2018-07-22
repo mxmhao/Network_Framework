@@ -62,11 +62,6 @@ HandlerTargetAction * CreateHandler(id target, SEL action)
          failureHandler:(nullable HandlerTargetAction *)failure
                progress:(nullable void (^)(NSProgress * _Nonnull downloadProgress))downloadProgress;
 
-+ (instancetype)callHead:(NSString *)URLString
-                  params:(nullable NSDictionary *)params
-          successHandler:(nullable HandlerTargetAction *)success
-          failureHandler:(nullable HandlerTargetAction *)failure;
-
 //做了硬着陆处理，不会因为HandlerTargetAction为nil或其变量为nil引起bug
 + (instancetype)callPost:(NSString *)URLString
                   params:(nullable NSDictionary *)params
@@ -74,6 +69,11 @@ HandlerTargetAction * CreateHandler(id target, SEL action)
           successHandler:(nullable HandlerTargetAction *)success
           failureHandler:(nullable HandlerTargetAction *)failure
                 progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress;
+
++ (instancetype)callHead:(NSString *)URLString
+                  params:(nullable NSDictionary *)params
+          successHandler:(nullable HandlerTargetAction *)success
+          failureHandler:(nullable HandlerTargetAction *)failure;
 
 + (instancetype)callPut:(NSString *)URLString
                   params:(nullable NSDictionary *)params

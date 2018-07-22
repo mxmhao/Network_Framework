@@ -19,22 +19,15 @@ NS_ASSUME_NONNULL_BEGIN
     completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
 
-- (nullable NSURLSessionDataTask *)HEAD:(NSString *)URLString
-                             parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(NSURLResponse *response, NSError * _Nullable error))completionHandler;
-
-
 - (nullable NSURLSessionDataTask *)POST:(NSString *)URLString
                              parameters:(nullable id)parameters
     progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
     completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
-//上传的另外写一个工具类
-//- (nullable NSURLSessionUploadTask *)POST:(NSString *)URLString
-//                    parameters:(id)parameters
-// constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
-//      progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
-// completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
+- (nullable NSURLSessionDataTask *)HEAD:(NSString *)URLString
+                             parameters:(nullable id)parameters
+    completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
 
 - (nullable NSURLSessionDataTask *)PUT:(NSString *)URLString
@@ -50,6 +43,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSURLSessionDataTask *)DELETE:(NSString *)URLString
                                parameters:(nullable id)parameters
     completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
+//上传的另外写一个工具类
+//- (nullable NSURLSessionUploadTask *)POST:(NSString *)URLString
+//                    parameters:(id)parameters
+// constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
+//      progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
+// completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
 @end
 

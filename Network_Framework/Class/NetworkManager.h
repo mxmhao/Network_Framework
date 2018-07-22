@@ -23,31 +23,37 @@ typedef NSNumber* TaskId;
  若是有其它需求可自行创建其它实例使用([[NetworkManager alloc] init]) */
 + (instancetype)shareManager;
 
-- (TaskId)callGet:(NSString *)URLString
+- (nullable TaskId)callGet:(NSString *)URLString
        parameters:(nullable id)parameters
          progress:(nullable void (^)(NSProgress *_Nonnull downloadProgress))downloadProgress
 completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
-- (TaskId)callHead:(NSString *)URLString
-        parameters:(nullable id)parameters
- completionHandler:(nullable void (^)(TaskId _Nullable taskId, NSURLResponse *response, NSError * _Nullable error))completionHandler;
 
-- (TaskId)callPost:(NSString *)URLString
+- (nullable TaskId)callPost:(NSString *)URLString
         parameters:(nullable id)parameters
           progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
  completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
-- (TaskId)callPut:(NSString *)URLString
-       parameters:(nullable id)parameters
-completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
 
-- (TaskId)callPatch:(NSString *)URLString
-         parameters:(nullable id)parameters
-  completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+- (nullable TaskId)callHead:(NSString *)URLString
+                 parameters:(nullable id)parameters
+    completionHandler:(nullable void (^)(TaskId _Nullable taskId, NSURLResponse *response, NSError * _Nullable error))completionHandler;
 
-- (TaskId)callDelete:(NSString *)URLString
-          parameters:(nullable id)parameters
-   completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
+- (nullable TaskId)callPut:(NSString *)URLString
+                parameters:(nullable id)parameters
+    completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
+
+- (nullable TaskId)callPatch:(NSString *)URLString
+                  parameters:(nullable id)parameters
+    completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
+
+- (nullable TaskId)callDelete:(NSString *)URLString
+                   parameters:(nullable id)parameters
+    completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+
 
 - (void)cancelTaskWithId:(TaskId)taskId;
 

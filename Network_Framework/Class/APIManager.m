@@ -147,17 +147,6 @@ static Class<ParamsSignatureDelegate> _delegate;
     return aManager;
 }
 
-+ (instancetype)callHead:(NSString *)URLString
-                  params:(NSDictionary *)params
-          successHandler:(HandlerTargetAction *)success
-          failureHandler:(HandlerTargetAction *)failure
-{
-    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
-    [aManager callHead];
-    
-    return aManager;
-}
-
 + (instancetype)callPost:(NSString *)URLString
                   params:(NSDictionary *)params
              dataHandler:(nullable HandlerTargetAction *)dataHandler
@@ -167,6 +156,17 @@ static Class<ParamsSignatureDelegate> _delegate;
 {
     APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:uploadProgress];
     [aManager callPost];
+    
+    return aManager;
+}
+
++ (instancetype)callHead:(NSString *)URLString
+                  params:(NSDictionary *)params
+          successHandler:(HandlerTargetAction *)success
+          failureHandler:(HandlerTargetAction *)failure
+{
+    APIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
+    [aManager callHead];
     
     return aManager;
 }
@@ -224,21 +224,6 @@ static Class<ParamsSignatureDelegate> _delegate;
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
 }
 
-- (void)callHead
-{
-    NSDictionary *sigParams = _params;
-    if (nil != _delegate) {
-        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
-    }
-    
-    _retryTag = RetryTagHead;
-    __weak typeof(self) this = self;
-    _taskId = [shareManager callHead:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams  completionHandler:^(TaskId _Nullable taskId, NSURLResponse * _Nonnull response, NSError * _Nullable error) {
-        [this completionHandler:taskId responseObject:response error:error];
-    }];
-    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
-}
-
 - (void)callPost
 {
     NSDictionary *sigParams = _params;
@@ -250,6 +235,21 @@ static Class<ParamsSignatureDelegate> _delegate;
     __weak typeof(self) this = self;
     _taskId = [shareManager callPost:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
+    }];
+    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
+}
+
+- (void)callHead
+{
+    NSDictionary *sigParams = _params;
+    if (nil != _delegate) {
+        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
+    }
+    
+    _retryTag = RetryTagHead;
+    __weak typeof(self) this = self;
+    _taskId = [shareManager callHead:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams  completionHandler:^(TaskId _Nullable taskId, NSURLResponse * _Nonnull response, NSError * _Nullable error) {
+        [this completionHandler:taskId responseObject:response error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
 }

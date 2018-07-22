@@ -29,7 +29,8 @@ static NSString *const Domain1 = @"https://www.baidu.com/";
 
 + (NSString *)absoluteURLStringWithURLString:(NSString *)URLString
 {
-    return [Domain1 stringByAppendingString:URLString];
+//    return [Domain1 stringByAppendingString:URLString];
+    return URLString;
 }
 
 @end
