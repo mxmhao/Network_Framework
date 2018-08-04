@@ -16,7 +16,7 @@ typedef NSNumber* TaskId;
 
 @interface NetworkManager : NSObject
 
-/** 为方便用户而暴露的接口，shareManager示例返回的是nil */
+/** 为方便用户而暴露的接口，通过shareManager单例返回的是nil */
 @property (nonatomic, strong, readonly) AFHTTPSessionManager *httpManager;
 
 /** 通用Manager，单例，

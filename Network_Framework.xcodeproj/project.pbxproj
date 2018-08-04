@@ -103,6 +103,8 @@
 				CB92B91C204545FD00CB0A28 /* AppDelegate.m */,
 				CB92B91E204545FD00CB0A28 /* ViewController.h */,
 				CB92B91F204545FD00CB0A28 /* ViewController.m */,
+				CB6A26F72045584300C8E187 /* FileAPIManager.h */,
+				CB6A26F82045584300C8E187 /* FileAPIManager.m */,
 				CB92B921204545FD00CB0A28 /* Main.storyboard */,
 				CB92B924204545FD00CB0A28 /* Assets.xcassets */,
 				CB92B926204545FD00CB0A28 /* LaunchScreen.storyboard */,
@@ -115,14 +117,12 @@
 		CB92B9312045463B00CB0A28 /* Class */ = {
 			isa = PBXGroup;
 			children = (
-				CB92B9322045472F00CB0A28 /* NetworkManager.h */,
-				CB92B9332045472F00CB0A28 /* NetworkManager.m */,
 				CB6A26F4204557F200C8E187 /* APIManager.h */,
 				CB6A26F5204557F200C8E187 /* APIManager.m */,
-				CB6A26F72045584300C8E187 /* FileAPIManager.h */,
-				CB6A26F82045584300C8E187 /* FileAPIManager.m */,
 				CB6A26FE2047A3A400C8E187 /* DomainManager.h */,
 				CB6A26FF2047A3A400C8E187 /* DomainManager.m */,
+				CB92B9322045472F00CB0A28 /* NetworkManager.h */,
+				CB92B9332045472F00CB0A28 /* NetworkManager.m */,
 				CB6A27012047D92700C8E187 /* AFHTTPSessionManager+CompletionHandler.h */,
 				CB6A27022047D92700C8E187 /* AFHTTPSessionManager+CompletionHandler.m */,
 				CB6A26FA2045629F00C8E187 /* XMLock.h */,

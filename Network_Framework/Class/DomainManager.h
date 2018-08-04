@@ -6,6 +6,7 @@
 //  Copyright © 2018年 mxm. All rights reserved.
 //
 //  域名管理工具类，自己改造，APIManager中用到了此类获取完整的URL
+//  也可以写自己的DNS解析
 
 #import <Foundation/Foundation.h>
 
