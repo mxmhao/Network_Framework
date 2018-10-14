@@ -2,20 +2,20 @@
 //  APIManager.m
 //  Network_Framework
 //
-//  Created by min on 2018/10/13.
-//  Copyright © 2018 mxm. All rights reserved.
+//  Created by mxm on 2018/2/27.
+//  Copyright © 2018年 mxm. All rights reserved.
 //
+//  此类做的操作：URLString加上域名，params加签，统一管理APIManager的保存和删除，把block换成target-action的方式
 
-#import "APIManager.h"
+#import "SharedAPIManager.h"
 #import "NetworkManager.h"
 #import "XMLock.h"
 #import "DomainManager.h"
 #import "HandlerTargetAction.h"
 
-@implementation APIManager
+@implementation SharedAPIManager
 {
     NSString *_URLString;
-    NetworkManager *_networkManager;
     NSDictionary *_params;
     HandlerTargetAction *_successHandler;
     HandlerTargetAction *_failureHandler;
@@ -28,7 +28,8 @@
 }
 
 static XMLock lock;
-static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
+static NSMutableDictionary<TaskId, SharedAPIManager *> *mdict = nil;
+static NetworkManager *shareManager;
 //创建保存当前网络请求的字典
 + (void)initialize
 {
@@ -36,11 +37,22 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
     dispatch_once(&onceToken, ^{
         mdict = [NSMutableDictionary dictionaryWithCapacity:3];
         lock = XM_CreateLock();
+        shareManager = [NetworkManager shareManager];
     });
 }
 
+static Class<ParamsSignatureDelegate> _delegate;
++ (void)setDelegate:(Class<ParamsSignatureDelegate>)delegate
+{
+    _delegate = delegate;
+}
+
++ (Class<ParamsSignatureDelegate>)delegate
+{
+    return _delegate;
+}
+
 - (instancetype)initWithURLString:(NSString *)URLString
-                   networkManager:(NetworkManager *)networkManager
                            params:(nullable NSDictionary *)params
                       dataHandler:(nullable HandlerTargetAction *)dataHandler
                    successHandler:(nullable HandlerTargetAction *)success
@@ -50,7 +62,6 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
     self = [super init];
     if (self) {
         _URLString = URLString;
-        _networkManager = networkManager;
         _params = params;
         _dataHandler = dataHandler;
         _successHandler = success;
@@ -59,7 +70,6 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
         _retryTag = RetryTagNone;
 //        NSProxy *pro;//测试
 //        NSObject *obj;
-        //给数据加签
     }
     return self;
 }
@@ -71,7 +81,6 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 
 #pragma mark -
 + (instancetype)callGet:(NSString *)URLString
-         networkManager:(NetworkManager *)networkManager
                  params:(nullable NSDictionary *)params
             dataHandler:(nullable HandlerTargetAction *)dataHandler
          successHandler:(nullable HandlerTargetAction *)success
@@ -79,7 +88,7 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
                progress:(nullable void (^)(NSProgress * _Nonnull))downloadProgress
 {
     //当前网络请求处理的保存者
-    APIManager *aManager = [[self alloc] initWithURLString:URLString networkManager:networkManager params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:downloadProgress];
+    SharedAPIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:downloadProgress];
     //请求网络
     [aManager callGet];
     
@@ -87,65 +96,60 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 }
 
 + (instancetype)callPost:(NSString *)URLString
-          networkManager:(NetworkManager *)networkManager
                   params:(NSDictionary *)params
              dataHandler:(nullable HandlerTargetAction *)dataHandler
           successHandler:(nullable HandlerTargetAction *)success
           failureHandler:(nullable HandlerTargetAction *)failure
                 progress:(void (^)(NSProgress * _Nonnull))uploadProgress
 {
-    APIManager *aManager = [[self alloc] initWithURLString:URLString networkManager:networkManager params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:uploadProgress];
+    SharedAPIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:uploadProgress];
     [aManager callPost];
     
     return aManager;
 }
 
 + (instancetype)callHead:(NSString *)URLString
-          networkManager:(NetworkManager *)networkManager
                   params:(NSDictionary *)params
           successHandler:(HandlerTargetAction *)success
           failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithURLString:URLString networkManager:networkManager params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
+    SharedAPIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
     [aManager callHead];
     
     return aManager;
 }
 
 + (instancetype)callPut:(NSString *)URLString
-         networkManager:(NetworkManager *)networkManager
                  params:(NSDictionary *)params
             dataHandler:(HandlerTargetAction *)dataHandler
          successHandler:(HandlerTargetAction *)success
          failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithURLString:URLString networkManager:networkManager params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
+    SharedAPIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
     [aManager callPut];
     
     return aManager;
 }
 
 + (instancetype)callPatch:(NSString *)URLString
-           networkManager:(NetworkManager *)networkManager
                    params:(NSDictionary *)params
               dataHandler:(HandlerTargetAction *)dataHandler
            successHandler:(HandlerTargetAction *)success
            failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithURLString:URLString networkManager:networkManager params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
+    SharedAPIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
     [aManager callPatch];
     
     return aManager;
 }
 
 + (instancetype)callDelete:(NSString *)URLString
-            networkManager:(NetworkManager *)networkManager
                     params:(NSDictionary *)params
                dataHandler:(HandlerTargetAction *)dataHandler
             successHandler:(HandlerTargetAction *)success
             failureHandler:(HandlerTargetAction *)failure
 {
-    APIManager *aManager = [[self alloc] initWithURLString:URLString networkManager:networkManager params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
+    SharedAPIManager *aManager = [[self alloc] initWithURLString:URLString params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
     [aManager callDelete];
     
     return aManager;
@@ -155,9 +159,14 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 - (void)callGet
 {
     //一些数据加签或加密的工作
+    NSDictionary *sigParams = _params;
+    if (nil != _delegate) {
+        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];//这里只是给个实例，具体的加签方式由开发者qq去另外实现
+    }
+    
     _retryTag = RetryTagGet;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callGet:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
+    _taskId = [shareManager callGet:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
@@ -165,9 +174,14 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 
 - (void)callPost
 {
+    NSDictionary *sigParams = _params;
+    if (nil != _delegate) {
+        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
+    }
+    
     _retryTag = RetryTagPost;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callPost:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
+    _taskId = [shareManager callPost:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
@@ -175,9 +189,14 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 
 - (void)callHead
 {
+    NSDictionary *sigParams = _params;
+    if (nil != _delegate) {
+        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
+    }
+    
     _retryTag = RetryTagHead;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callHead:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params  completionHandler:^(TaskId _Nullable taskId, NSURLResponse * _Nonnull response, NSError * _Nullable error) {
+    _taskId = [shareManager callHead:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams  completionHandler:^(TaskId _Nullable taskId, NSURLResponse * _Nonnull response, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:response error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
@@ -185,9 +204,14 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 
 - (void)callPut
 {
+    NSDictionary *sigParams = _params;
+    if (nil != _delegate) {
+        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
+    }
+    
     _retryTag = RetryTagPut;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callPut:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
+    _taskId = [shareManager callPut:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
@@ -195,9 +219,14 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 
 - (void)callPatch
 {
+    NSDictionary *sigParams = _params;
+    if (nil != _delegate) {
+        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
+    }
+    
     _retryTag = RetryTagPatch;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callPatch:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
+    _taskId = [shareManager callPatch:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
@@ -205,9 +234,14 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 
 - (void)callDelete
 {
+    NSDictionary *sigParams = _params;
+    if (nil != _delegate) {
+        sigParams = [_delegate signature:[NSMutableDictionary dictionaryWithDictionary:_params]];
+    }
+    
     _retryTag = RetryTagDelete;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callDelete:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
+    _taskId = [shareManager callDelete:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:sigParams completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
         [this completionHandler:taskId responseObject:responseObject error:error];
     }];
     DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
@@ -233,7 +267,7 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 #pragma mark -
 - (void)cancel
 {
-    [_networkManager cancelTaskWithId:_taskId];
+    [shareManager cancelTaskWithId:_taskId];
     DictionaryThreadSecureDeleteObjectForKey(lock, mdict, _taskId);
 }
 

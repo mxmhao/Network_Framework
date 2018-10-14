@@ -15,7 +15,7 @@ static NSString *const RenameFileAPI = @"api/rename_file";
 
 @implementation FileAPIManager
 
-+ (APIManager *)fetchFilesWithDirectoryPath:(NSString *)path
++ (SharedAPIManager *)fetchFilesWithDirectoryPath:(NSString *)path
                             sorting:(nullable NSString *)sorting
                       successHandle:(nullable HandlerTargetAction *)success
                       failureHandle:(nullable HandlerTargetAction *)failure
@@ -27,22 +27,22 @@ static NSString *const RenameFileAPI = @"api/rename_file";
         @"path": path,
         @"sort": sorting
     };
-    return [APIManager callPost:GetFilesAPI params:params dataHandler:nil successHandler:success failureHandler:false progress:uploadProgress];
+    return [SharedAPIManager callPost:GetFilesAPI params:params dataHandler:nil successHandler:success failureHandler:false progress:uploadProgress];
 }
 
-+ (APIManager *)deleteFile:(NSString *)file successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
++ (SharedAPIManager *)deleteFile:(NSString *)file successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
 {
     NSDictionary *params = @{@"path": file};
-    return [APIManager callPost:DeleteFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
+    return [SharedAPIManager callPost:DeleteFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
 }
 
-+ (APIManager *)renameFile:(NSString *)oldName newName:(NSString *)newName successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
++ (SharedAPIManager *)renameFile:(NSString *)oldName newName:(NSString *)newName successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
 {
     NSDictionary *params = @{
         @"oldName": oldName,
         @"newName": newName
     };
-    return [APIManager callPost:RenameFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
+    return [SharedAPIManager callPost:RenameFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
 }
 
 @end

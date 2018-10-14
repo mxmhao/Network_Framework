@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3938456D217247AF009C7350 /* APIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3938456C217247AF009C7350 /* APIManager.m */; };
+		39D223172172FEB70021A9FB /* HandlerTargetAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 39D223162172FEB70021A9FB /* HandlerTargetAction.m */; };
 		BFFA8C5D7A2C6974D641CFD6 /* Pods_Network_Framework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DD3479B494AC3171C168DBD /* Pods_Network_Framework.framework */; };
-		CB6A26F6204557F200C8E187 /* APIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6A26F5204557F200C8E187 /* APIManager.m */; };
+		CB6A26F6204557F200C8E187 /* SharedAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6A26F5204557F200C8E187 /* SharedAPIManager.m */; };
 		CB6A26F92045584300C8E187 /* FileAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6A26F82045584300C8E187 /* FileAPIManager.m */; };
 		CB6A27002047A3A400C8E187 /* DomainManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6A26FF2047A3A400C8E187 /* DomainManager.m */; };
 		CB6A27032047D92700C8E187 /* AFHTTPSessionManager+CompletionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6A27022047D92700C8E187 /* AFHTTPSessionManager+CompletionHandler.m */; };
@@ -24,9 +26,14 @@
 /* Begin PBXFileReference section */
 		167C884AFA9BADAC4BF7D586 /* Pods-Network_Framework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Network_Framework.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Network_Framework/Pods-Network_Framework.debug.xcconfig"; sourceTree = "<group>"; };
 		1DD3479B494AC3171C168DBD /* Pods_Network_Framework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Network_Framework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3938456B217247AF009C7350 /* APIManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APIManager.h; sourceTree = "<group>"; };
+		3938456C217247AF009C7350 /* APIManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = APIManager.m; sourceTree = "<group>"; };
+		39D223152172FEB70021A9FB /* HandlerTargetAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HandlerTargetAction.h; sourceTree = "<group>"; };
+		39D223162172FEB70021A9FB /* HandlerTargetAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HandlerTargetAction.m; sourceTree = "<group>"; };
+		39D22318217308010021A9FB /* APIManagerProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APIManagerProtocol.h; sourceTree = "<group>"; };
 		4DB8AB840B9BC761C857C6E7 /* Pods-Network_Framework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Network_Framework.release.xcconfig"; path = "Pods/Target Support Files/Pods-Network_Framework/Pods-Network_Framework.release.xcconfig"; sourceTree = "<group>"; };
-		CB6A26F4204557F200C8E187 /* APIManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = APIManager.h; sourceTree = "<group>"; };
-		CB6A26F5204557F200C8E187 /* APIManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = APIManager.m; sourceTree = "<group>"; };
+		CB6A26F4204557F200C8E187 /* SharedAPIManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SharedAPIManager.h; sourceTree = "<group>"; };
+		CB6A26F5204557F200C8E187 /* SharedAPIManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SharedAPIManager.m; sourceTree = "<group>"; };
 		CB6A26F72045584300C8E187 /* FileAPIManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileAPIManager.h; sourceTree = "<group>"; };
 		CB6A26F82045584300C8E187 /* FileAPIManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileAPIManager.m; sourceTree = "<group>"; };
 		CB6A26FA2045629F00C8E187 /* XMLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XMLock.h; sourceTree = "<group>"; };
@@ -117,8 +124,13 @@
 		CB92B9312045463B00CB0A28 /* Class */ = {
 			isa = PBXGroup;
 			children = (
-				CB6A26F4204557F200C8E187 /* APIManager.h */,
-				CB6A26F5204557F200C8E187 /* APIManager.m */,
+				39D223152172FEB70021A9FB /* HandlerTargetAction.h */,
+				39D223162172FEB70021A9FB /* HandlerTargetAction.m */,
+				39D22318217308010021A9FB /* APIManagerProtocol.h */,
+				CB6A26F4204557F200C8E187 /* SharedAPIManager.h */,
+				CB6A26F5204557F200C8E187 /* SharedAPIManager.m */,
+				3938456B217247AF009C7350 /* APIManager.h */,
+				3938456C217247AF009C7350 /* APIManager.m */,
 				CB6A26FE2047A3A400C8E187 /* DomainManager.h */,
 				CB6A26FF2047A3A400C8E187 /* DomainManager.m */,
 				CB92B9322045472F00CB0A28 /* NetworkManager.h */,
@@ -260,12 +272,14 @@
 			files = (
 				CB92B9342045472F00CB0A28 /* NetworkManager.m in Sources */,
 				CB6A27032047D92700C8E187 /* AFHTTPSessionManager+CompletionHandler.m in Sources */,
+				3938456D217247AF009C7350 /* APIManager.m in Sources */,
 				CB92B920204545FD00CB0A28 /* ViewController.m in Sources */,
 				CB92B92B204545FD00CB0A28 /* main.m in Sources */,
 				CB6A26F92045584300C8E187 /* FileAPIManager.m in Sources */,
 				CB6A27002047A3A400C8E187 /* DomainManager.m in Sources */,
+				39D223172172FEB70021A9FB /* HandlerTargetAction.m in Sources */,
 				CB92B91D204545FD00CB0A28 /* AppDelegate.m in Sources */,
-				CB6A26F6204557F200C8E187 /* APIManager.m in Sources */,
+				CB6A26F6204557F200C8E187 /* SharedAPIManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

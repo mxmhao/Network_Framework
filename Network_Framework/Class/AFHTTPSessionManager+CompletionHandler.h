@@ -11,38 +11,41 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef void(^XM_AFCompletionHandler)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error);
+
 @interface AFHTTPSessionManager (CompletionHandler)
 
 - (nullable NSURLSessionDataTask *)GET:(NSString *)URLString
                             parameters:(nullable id)parameters
     progress:(nullable void (^)(NSProgress *_Nonnull downloadProgress))downloadProgress
-    completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable XM_AFCompletionHandler)completionHandler;
 
 
 - (nullable NSURLSessionDataTask *)POST:(NSString *)URLString
                              parameters:(nullable id)parameters
     progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
-    completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable XM_AFCompletionHandler)completionHandler;
 
 
+//head请求是没有responseObject返回
 - (nullable NSURLSessionDataTask *)HEAD:(NSString *)URLString
                              parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable XM_AFCompletionHandler)completionHandler;
 
 
 - (nullable NSURLSessionDataTask *)PUT:(NSString *)URLString
                             parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable XM_AFCompletionHandler)completionHandler;
 
 
 - (nullable NSURLSessionDataTask *)PATCH:(NSString *)URLString
                               parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable XM_AFCompletionHandler)completionHandler;
 
 
 - (nullable NSURLSessionDataTask *)DELETE:(NSString *)URLString
                                parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable XM_AFCompletionHandler)completionHandler;
 
 //上传的另外写一个工具类
 //- (nullable NSURLSessionUploadTask *)POST:(NSString *)URLString

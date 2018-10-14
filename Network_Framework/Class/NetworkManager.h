@@ -13,6 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NSNumber* TaskId;
+typedef void(^NMCompletionHandler)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error);
 
 @interface NetworkManager : NSObject
 
@@ -26,13 +27,13 @@ typedef NSNumber* TaskId;
 - (nullable TaskId)callGet:(NSString *)URLString
        parameters:(nullable id)parameters
          progress:(nullable void (^)(NSProgress *_Nonnull downloadProgress))downloadProgress
-completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+completionHandler:(nullable NMCompletionHandler)completionHandler;
 
 
 - (nullable TaskId)callPost:(NSString *)URLString
         parameters:(nullable id)parameters
           progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress
- completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+ completionHandler:(nullable NMCompletionHandler)completionHandler;
 
 
 - (nullable TaskId)callHead:(NSString *)URLString
@@ -42,17 +43,17 @@ completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable respo
 
 - (nullable TaskId)callPut:(NSString *)URLString
                 parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable NMCompletionHandler)completionHandler;
 
 
 - (nullable TaskId)callPatch:(NSString *)URLString
                   parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable NMCompletionHandler)completionHandler;
 
 
 - (nullable TaskId)callDelete:(NSString *)URLString
                    parameters:(nullable id)parameters
-    completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler;
+    completionHandler:(nullable NMCompletionHandler)completionHandler;
 
 
 - (void)cancelTaskWithId:(TaskId)taskId;

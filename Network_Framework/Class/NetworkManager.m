@@ -10,7 +10,6 @@
 #import "NetworkManager.h"
 #import "XMLock.h"
 #import "AFHTTPSessionManager+CompletionHandler.h"
-//#import <CoreFoundation/CoreFoundation.h>
 
 /*
 //测试内存释放
@@ -22,14 +21,39 @@
 {
     NSLog(@"%@ -- 释放: %p", [self class], self);
 }
-@end//*/
+@end */
+
+NS_INLINE
+TaskId ThreadSecureSaveTask(XMLock lock, NSMutableDictionary<TaskId, NSURLSessionTask *> *taskDic, NSURLSessionTask *task)
+{
+    TaskId tid = nil;
+    if (nil != task) {
+        tid = @(task.taskIdentifier);
+        DictionaryThreadSecureSetObjectForKey(lock, taskDic, tid, task);
+    }
+    return tid;
+}
+
+//NS_INLINE
+//void ThreadSecureDeleteTask(NetworkManager *networkManager, id responseObject, NSError * error, NSMutableDictionary<TaskId, NSURLSessionTask *> *taskDic, NSURLSessionTask *task, NMCompletionHandler completionHandler)
+//{
+//    TaskId tid = nil;
+//    if (nil != task) {
+//        tid = @(task.taskIdentifier);
+////        __strong typeof(networkManager) this = networkManager;
+////        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);
+//    }
+//    if (completionHandler) {
+//        completionHandler(tid, responseObject, error);
+//    }
+//}
 
 @implementation NetworkManager
 {
     AFHTTPSessionManager *_manager;
-    //保存任务，以便取消
-    NSMutableDictionary<TaskId, NSURLSessionTask *> *_taskDic;
+    NSMutableDictionary<TaskId, NSURLSessionTask *> *_taskDic;//保存任务，以便取消
     XMLock _lock;
+//    XM_AFCompletionHandler _completionHandler;
 }
 
 static NetworkManager *shareManager = nil;
@@ -38,7 +62,9 @@ static NetworkManager *shareManager = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         shareManager = [self new];
-        //shareManager->_manager不会暴露到外面，所以一些定制参数在这里添加
+        //shareManager->_manager//不会暴露到外面，所以一些定制参数在这里添加
+        //共享的最大并发数设置
+        shareManager->_manager.operationQueue.maxConcurrentOperationCount = 3;
     });
     return shareManager;
 }
@@ -51,10 +77,11 @@ static NetworkManager *shareManager = nil;
     self = [super init];
     if (self) {
         _manager = [AFHTTPSessionManager manager];
-//        _manager.requestSerializer.timeoutInterval = 15;
+//        _manager.requestSerializer.timeoutInterval = 30;//超时时间用默认的
         ((AFJSONResponseSerializer *)_manager.responseSerializer).removesKeysWithNullValues = YES;
         _taskDic = [NSMutableDictionary dictionaryWithCapacity:5];
         _lock = XM_CreateLock();
+        NSLog(@"shareManager -- init");
     }
     return self;
 }
@@ -71,7 +98,7 @@ static NetworkManager *shareManager = nil;
 - (TaskId)callGet:(NSString *)URLString
        parameters:(id)parameters
          progress:(void (^)(NSProgress * _Nonnull))downloadProgress
-completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
+completionHandler:(NMCompletionHandler)completionHandler
 {
 //    _manager.responseSerializer = [AFHTTPResponseSerializer serializer];//测试
     __weak typeof(self) weakSelf = self;
@@ -91,18 +118,13 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
     }];
     
 //    NSLog(@"%p", task);
-    TaskId tid = nil;
-    if (nil != task) {
-        tid = @(task.taskIdentifier);
-        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    }
-    return tid;
+    return ThreadSecureSaveTask(_lock, _taskDic, task);
 }
 
 - (TaskId)callPost:(NSString *)URLString
         parameters:(id)parameters
           progress:(void (^)(NSProgress * _Nonnull))uploadProgress
- completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
+ completionHandler:(NMCompletionHandler)completionHandler
 {
     __weak typeof(self) weakSelf = self;
     __block NSURLSessionDataTask *task = nil;
@@ -118,12 +140,7 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
         }
     }];
     
-    TaskId tid = nil;
-    if (nil != task) {
-        tid = @(task.taskIdentifier);
-        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    }
-    return tid;
+    return ThreadSecureSaveTask(_lock, _taskDic, task);
 }
 
 - (TaskId)callHead:(NSString *)URLString parameters:(id)parameters completionHandler:(void (^)(TaskId _Nullable, NSURLResponse *, NSError * _Nullable))completionHandler
@@ -143,15 +160,10 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
         }
     }];
     
-    TaskId tid = nil;
-    if (nil != task) {
-        tid = @(task.taskIdentifier);
-        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    }
-    return tid;
+    return ThreadSecureSaveTask(_lock, _taskDic, task);
 }
 
-- (TaskId)callPut:(NSString *)URLString parameters:(id)parameters completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
+- (TaskId)callPut:(NSString *)URLString parameters:(id)parameters completionHandler:(NMCompletionHandler)completionHandler
 {
     __weak typeof(self) weakSelf = self;
     //这里必须用__block，不然下面block中的task可能为nil
@@ -168,15 +180,10 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
         }
     }];
     
-    TaskId tid = nil;
-    if (nil != task) {
-        tid = @(task.taskIdentifier);
-        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    }
-    return tid;
+    return ThreadSecureSaveTask(_lock, _taskDic, task);
 }
 
-- (TaskId)callPatch:(NSString *)URLString parameters:(id)parameters completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
+- (TaskId)callPatch:(NSString *)URLString parameters:(id)parameters completionHandler:(NMCompletionHandler)completionHandler
 {
     __weak typeof(self) weakSelf = self;
     //这里必须用__block，不然下面block中的task可能为nil
@@ -193,16 +200,11 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
         }
     }];
     
-    TaskId tid = nil;
-    if (nil != task) {
-        tid = @(task.taskIdentifier);
-        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    }
-    return tid;
+    return ThreadSecureSaveTask(_lock, _taskDic, task);
 }
 
 
-- (TaskId)callDelete:(NSString *)URLString parameters:(id)parameters completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable))completionHandler
+- (TaskId)callDelete:(NSString *)URLString parameters:(id)parameters completionHandler:(NMCompletionHandler)completionHandler
 {
     __weak typeof(self) weakSelf = self;
     //这里必须用__block，不然下面block中的task可能为nil
@@ -219,37 +221,8 @@ completionHandler:(void (^)(TaskId _Nullable, id _Nullable, NSError * _Nullable)
         }
     }];
     
-    TaskId tid = nil;
-    if (nil != task) {
-        tid = @(task.taskIdentifier);
-        DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    }
-    return tid;
+    return ThreadSecureSaveTask(_lock, _taskDic, task);
 }
-
-//上传应该单独写一个工具类
-/*
-- (TaskId)callUpload:(NSString *)URLString
-            params:(NSDictionary *)params
-constructingBodyWithBlock:(nullable void (^)(id <AFMultipartFormData> formData))block
-  progress:(nullable void (^)(NSProgress *uploadProgress))uploadProgress
-   completionHandler:(nullable void (^)(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error))completionHandler
-{
-    __weak typeof(self) weakSelf = self;
-    __block NSURLSessionDataTask *task = nil;
-    task = [_manager POST:URLString parameters:params constructingBodyWithBlock:block progress:uploadProgress completionHandler:^(NSURLResponse * _Nonnull response, id _Nullable responseObject, NSError * _Nullable error) {
-        TaskId tid = @(task.taskIdentifier);
-        if (completionHandler) {
-            completionHandler(tid, responseObject, error);
-        }
-        __strong typeof(weakSelf) self = weakSelf;
-        DictionaryThreadSecureDeleteObjectForKey(self->_lock, self->_taskDic, tid);
-    }];
-    
-    TaskId tid = @(task.taskIdentifier);
-    DictionaryThreadSecureSetObjectForKey(_lock, _taskDic, tid, task);
-    return tid;
-}//*/
 
 - (void)cancelTaskWithId:(TaskId)taskId
 {

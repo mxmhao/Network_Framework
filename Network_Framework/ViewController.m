@@ -8,7 +8,8 @@
 
 #import "ViewController.h"
 #import "NetworkManager.h"
-#import "APIManager.h"
+#import "SharedAPIManager.h"
+#import "HandlerTargetAction.h"
 
 @interface UIView (Hander)
 
@@ -44,7 +45,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    _showView = [UIView new];
+    _showView = [UIView new];
 //    NSLog(@"%p", _showView);
 //    UIButton *btn;
 //    [btn addTarget:self action:@selector(inief) forControlEvents:UIControlEventAllEvents];
@@ -65,7 +66,7 @@
 //        NSLog(@"-->\n%@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
 //    }];
     
-//    [APIManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
+    [SharedAPIManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
 //    _showView = nil;
 }
 
