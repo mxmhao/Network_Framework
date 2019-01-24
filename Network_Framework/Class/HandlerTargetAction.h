@@ -33,42 +33,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-NS_INLINE
-HandlerTargetAction * CreateHandler(id target, SEL action)
-{
-    return [HandlerTargetAction target:target action:action];
-}
+FOUNDATION_EXTERN_INLINE
+HandlerTargetAction * CreateHandler(id target, SEL action);
 
 //typedef struct objc_selector *SEL; 这个是SEL的定义
-NS_INLINE
-void callTargetActionWithData(id target, SEL action, id data)
-{
-//    if (nil == target || NULL == action) return;
-    IMP imp = [target methodForSelector:action];
-//    void (*func)(id, SEL, id) = (void *)imp;    //前两个参数是固定的
-//    void (*func)(__strong id, SEL, ...) = (void (*)(__strong id, SEL, ...))imp;//网上搜到是这么写的
-    void (*func)(__strong id, SEL, ...) = (void (*)(__strong id, SEL, ...))imp;//这么写好点
-    if (NULL == func) {
-        @throw [NSException exceptionWithName:@"方法调用失败" reason:[NSString stringWithFormat:@"方法\"%@\"不存在", NSStringFromSelector(action)] userInfo:nil];
-    }
-    func(target, action, data);
-    
-//上面的方式，应该比下面的方式更快
-//#pragma clang diagnostic push
-//#pragma clang diagnostic ignored "-Warc-performSelector-leaks" //消除警告
-//    [_target performSelector:_action withObject:data];//此方式调用会产生警告
-//#pragma clang diagnostic pop
-}
+FOUNDATION_EXTERN_INLINE
+void callTargetActionWithData(id target, SEL action, id data);
 
-NS_INLINE
-id callTargetActionWithDataForResult(id target, SEL action, id data)
-{
-    //    if (nil == target || NULL == action) return nil;
-    id (*func)(id, SEL, ...) = (id (*)(id, SEL, ...))[target methodForSelector:action];
-    if (NULL == func) {
-        @throw [NSException exceptionWithName:@"方法调用失败" reason:[NSString stringWithFormat:@"方法\"%@\"不存在", NSStringFromSelector(action)] userInfo:nil];
-    }
-    return func(target, action, data);
-}
+FOUNDATION_EXTERN_INLINE
+id callTargetActionWithDataForResult(id target, SEL action, id data);
 
 NS_ASSUME_NONNULL_END

@@ -11,24 +11,26 @@
 //  本类一般由VC或者ViewModel调用
 
 #import <Foundation/Foundation.h>
-#import "SharedAPIManager.h"
+#import "DomainManager.h"
+
+@class HandlerTargetAction;
 
 NS_ASSUME_NONNULL_BEGIN
 
 //类名改为FileService更适合
 @interface FileAPIManager : NSObject
 
-+ (SharedAPIManager *)fetchFilesWithDirectoryPath:(NSString *)path
++ (NSURLSessionDataTask *)fetchFilesWithDirectoryPath:(NSString *)path
                                     sorting:(nullable NSString *)sorting
                               successHandle:(nullable HandlerTargetAction *)success
                               failureHandle:(nullable HandlerTargetAction *)failure
     progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress;
 
-+ (SharedAPIManager *)deleteFile:(NSString *)file
++ (NSURLSessionDataTask *)deleteFile:(NSString *)file
              successHandle:(nullable HandlerTargetAction *)success
              failureHandle:(nullable HandlerTargetAction *)failure;
 
-+ (SharedAPIManager *)renameFile:(NSString *)oldName
++ (NSURLSessionDataTask *)renameFile:(NSString *)oldName
                    newName:(NSString *)newName
              successHandle:(nullable HandlerTargetAction *)success
              failureHandle:(nullable HandlerTargetAction *)failure;

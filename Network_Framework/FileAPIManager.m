@@ -8,6 +8,7 @@
 //  此类主要是组装请求参数，同一模块在一个类中写多个类方法，多个模块写成多个类，这个主要是有开发者自己去发挥，此类只是一个例子
 
 #import "FileAPIManager.h"
+#import "AFHTTPSessionManager+TargetAction.h"
 
 static NSString *const GetFilesAPI = @"api/getfilelist";
 static NSString *const DeleteFileAPI = @"api/delete_file";
@@ -15,7 +16,7 @@ static NSString *const RenameFileAPI = @"api/rename_file";
 
 @implementation FileAPIManager
 
-+ (SharedAPIManager *)fetchFilesWithDirectoryPath:(NSString *)path
++ (NSURLSessionDataTask *)fetchFilesWithDirectoryPath:(NSString *)path
                             sorting:(nullable NSString *)sorting
                       successHandle:(nullable HandlerTargetAction *)success
                       failureHandle:(nullable HandlerTargetAction *)failure
@@ -27,22 +28,23 @@ static NSString *const RenameFileAPI = @"api/rename_file";
         @"path": path,
         @"sort": sorting
     };
-    return [SharedAPIManager callPost:GetFilesAPI params:params dataHandler:nil successHandler:success failureHandler:false progress:uploadProgress];
+    //数据加密可以放在这里
+    return [AFHTTPSessionManager.shareManager callPost:[DomainManager absoluteURLStringWithURLString:GetFilesAPI] params:params dataHandler:nil successHandler:success failureHandler:false progress:uploadProgress];
 }
 
-+ (SharedAPIManager *)deleteFile:(NSString *)file successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
++ (NSURLSessionDataTask *)deleteFile:(NSString *)file successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
 {
     NSDictionary *params = @{@"path": file};
-    return [SharedAPIManager callPost:DeleteFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
+    return [AFHTTPSessionManager.shareManager callPost:[DomainManager absoluteURLStringWithURLString:DeleteFileAPI] params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
 }
 
-+ (SharedAPIManager *)renameFile:(NSString *)oldName newName:(NSString *)newName successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
++ (NSURLSessionDataTask *)renameFile:(NSString *)oldName newName:(NSString *)newName successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
 {
     NSDictionary *params = @{
         @"oldName": oldName,
         @"newName": newName
     };
-    return [SharedAPIManager callPost:RenameFileAPI params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
+    return [AFHTTPSessionManager.shareManager callPost:[DomainManager absoluteURLStringWithURLString:RenameFileAPI] params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
 }
 
 @end

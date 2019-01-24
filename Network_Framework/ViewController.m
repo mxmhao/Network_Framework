@@ -7,9 +7,8 @@
 //
 
 #import "ViewController.h"
-#import "NetworkManager.h"
-#import "SharedAPIManager.h"
 #import "HandlerTargetAction.h"
+#import "AFHTTPSessionManager+TargetAction.h"
 
 @interface UIView (Hander)
 
@@ -23,14 +22,15 @@
 {
     NSLog(@"UIView -- 释放: %p", self);
 }
+
 - (void)handleSuccess:(id)re
 {
-    NSLog(@"\n%@", [[NSString alloc] initWithData:re encoding:NSUTF8StringEncoding]);
+    NSLog(@"handleSuccess:\n%@", [[NSString alloc] initWithData:re encoding:NSUTF8StringEncoding]);
 }
 
 - (void)handleFailure:(id)re
 {
-    NSLog(@"%@", re);
+    NSLog(@"handleFailure:%@", re);
 }
 @end
 
@@ -51,23 +51,11 @@
 //    [btn addTarget:self action:@selector(inief) forControlEvents:UIControlEventAllEvents];
 //    UIControlTargetAction
 //    [FileAPIManager fetchFilesWithDirectoryPath:@"/admin" sorting:@"time" successHandle:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandle:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
-    
-//    AFHTTPSessionManager *hsm = [AFHTTPSessionManager manager];
-//    [hsm POST:@"" parameters:nil progress:nil success:nil failure:nil];
-//    [hsm GET:@"" parameters:nil progress:^(NSProgress * _Nonnull downloadProgress) {
-//        //
-//    } success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-//        //
-//    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-//        //
-//    }];
-    
-//    [[NetworkManager shareManager] callGet:@"https://www.baidu.com" parameters:nil progress:nil completionHandler:^(TaskId  _Nullable taskId, id  _Nullable responseObject, NSError * _Nullable error) {
-//        NSLog(@"-->\n%@", [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
-//    }];
-    
-    [SharedAPIManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
 //    _showView = nil;
+    
+//    [NSURL URLWithString:@"test" relativeToURL:[NSURL URLWithString:@"https://www.baidu.com/"]];
+    
+    [AFHTTPSessionManager.shareManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
 }
 
 

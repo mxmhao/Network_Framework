@@ -28,13 +28,13 @@
 }
 
 static XMLock lock;
-static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
+static NSMapTable<TaskId, APIManager *> *mdict = nil;
 //创建保存当前网络请求的字典
 + (void)initialize
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        mdict = [NSMutableDictionary dictionaryWithCapacity:3];
+        mdict = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsStrongMemory | NSPointerFunctionsObjectPointerPersonality valueOptions:NSPointerFunctionsStrongMemory];
         lock = XM_CreateLock();
     });
 }
@@ -50,7 +50,11 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
     self = [super init];
     if (self) {
         _URLString = URLString;
-        _networkManager = networkManager;
+        if (nil == networkManager) {
+            _networkManager = [NetworkManager shareManager];
+        } else {
+            _networkManager = networkManager;            
+        }
         _params = params;
         _dataHandler = dataHandler;
         _successHandler = success;
@@ -70,6 +74,25 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 }
 
 #pragma mark -
++ (instancetype)callGet:(NSString *)URLString
+                 params:(nullable NSDictionary *)params
+            dataHandler:(nullable HandlerTargetAction *)dataHandler
+         successHandler:(nullable HandlerTargetAction *)success
+         failureHandler:(nullable HandlerTargetAction *)failure
+{
+    return [self callGet:URLString networkManager:nil params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
+}
+
++ (instancetype)callGet:(NSString *)URLString
+                 params:(nullable NSDictionary *)params
+            dataHandler:(nullable HandlerTargetAction *)dataHandler
+         successHandler:(nullable HandlerTargetAction *)success
+         failureHandler:(nullable HandlerTargetAction *)failure
+               progress:(nullable void (^)(NSProgress * _Nonnull downloadProgress))downloadProgress
+{
+    return [self callGet:URLString networkManager:nil params:params dataHandler:dataHandler successHandler:success failureHandler:failure progress:nil];
+}
+
 + (instancetype)callGet:(NSString *)URLString
          networkManager:(NetworkManager *)networkManager
                  params:(nullable NSDictionary *)params
@@ -157,65 +180,65 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
     //一些数据加签或加密的工作
     _retryTag = RetryTagGet;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callGet:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
-        [this completionHandler:taskId responseObject:responseObject error:error];
+    _taskId = [_networkManager callGet:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params progress:_progress completionHandler:^(id _Nullable responseObject, NSError * _Nullable error) {
+        [this responseObject:responseObject error:error];
     }];
-    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
+    XM_OnThreadSafe(lock, [mdict setObject:self forKey:_taskId]);
 }
 
 - (void)callPost
 {
     _retryTag = RetryTagPost;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callPost:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params progress:_progress completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
-        [this completionHandler:taskId responseObject:responseObject error:error];
+    _taskId = [_networkManager callPost:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params progress:_progress completionHandler:^(id _Nullable responseObject, NSError * _Nullable error) {
+        [this responseObject:responseObject error:error];
     }];
-    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
+    XM_OnThreadSafe(lock, [mdict setObject:self forKey:_taskId]);
 }
 
 - (void)callHead
 {
     _retryTag = RetryTagHead;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callHead:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params  completionHandler:^(TaskId _Nullable taskId, NSURLResponse * _Nonnull response, NSError * _Nullable error) {
-        [this completionHandler:taskId responseObject:response error:error];
+    _taskId = [_networkManager callHead:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params  completionHandler:^(NSURLResponse * _Nonnull response, NSError * _Nullable error) {
+        [this responseObject:response error:error];
     }];
-    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
+    XM_OnThreadSafe(lock, [mdict setObject:self forKey:_taskId]);
 }
 
 - (void)callPut
 {
     _retryTag = RetryTagPut;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callPut:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
-        [this completionHandler:taskId responseObject:responseObject error:error];
+    _taskId = [_networkManager callPut:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(id _Nullable responseObject, NSError * _Nullable error) {
+        [this responseObject:responseObject error:error];
     }];
-    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
+    XM_OnThreadSafe(lock, [mdict setObject:self forKey:_taskId]);
 }
 
 - (void)callPatch
 {
     _retryTag = RetryTagPatch;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callPatch:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
-        [this completionHandler:taskId responseObject:responseObject error:error];
+    _taskId = [_networkManager callPatch:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(id _Nullable responseObject, NSError * _Nullable error) {
+        [this responseObject:responseObject error:error];
     }];
-    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
+    XM_OnThreadSafe(lock, [mdict setObject:self forKey:_taskId]);
 }
 
 - (void)callDelete
 {
     _retryTag = RetryTagDelete;
     __weak typeof(self) this = self;
-    _taskId = [_networkManager callDelete:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(TaskId _Nullable taskId, id _Nullable responseObject, NSError * _Nullable error) {
-        [this completionHandler:taskId responseObject:responseObject error:error];
+    _taskId = [_networkManager callDelete:[DomainManager absoluteURLStringWithURLString:_URLString] parameters:_params completionHandler:^(id _Nullable responseObject, NSError * _Nullable error) {
+        [this responseObject:responseObject error:error];
     }];
-    DictionaryThreadSecureSetObjectForKey(lock, mdict, _taskId, self);
+    XM_OnThreadSafe(lock, [mdict setObject:self forKey:_taskId]);
 }
 
-- (void)completionHandler:(TaskId)taskId responseObject:(id)responseObject error:(NSError *)error
+- (void)responseObject:(id)responseObject error:(NSError *)error
 {
-    DictionaryThreadSecureDeleteObjectForKey(lock, mdict, taskId);
+    XM_OnThreadSafe(lock, [mdict removeObjectForKey:mdict]);
     
     if (error) {
         if (nil == _failureHandler) return;
@@ -233,8 +256,8 @@ static NSMutableDictionary<TaskId, APIManager *> *mdict = nil;
 #pragma mark -
 - (void)cancel
 {
-    [_networkManager cancelTaskWithId:_taskId];
-    DictionaryThreadSecureDeleteObjectForKey(lock, mdict, _taskId);
+//    [_networkManager cancelTaskWithId:_taskId];
+//    XM_OnThreadSafe(lock, [mdict removeObjectForKey:mdict]);
 }
 
 - (void)retry
