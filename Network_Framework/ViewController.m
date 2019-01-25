@@ -59,7 +59,7 @@
     
     NSLog(@"%@", [NSURL URLWithString:@"/test" relativeToURL:[NSURL URLWithString:@"https://www.baidu.com/wokao/"]].absoluteString);
     
-    [AFHTTPSessionManager.shareManager callHead:@"https://www.baidu.com" params:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleHeadSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)]];
+    [AFHTTPSessionManager.shareManager callHead:@"https://www.baidu.com" params:nil successHandler:CreateHandler(_showView, @selector(handleHeadSuccess:)) failureHandler:CreateHandler(_showView, @selector(handleFailure:))];
     
     [AFHTTPSessionManager.shareManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleGetSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
 }
