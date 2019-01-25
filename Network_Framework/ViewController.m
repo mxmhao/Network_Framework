@@ -12,7 +12,8 @@
 
 @interface UIView (Hander)
 
-- (void)handleSuccess:(id)re;
+- (void)handleGetSuccess:(id)re;
+- (void)handleHeadSuccess:(NSHTTPURLResponse *)re;
 - (void)handleFailure:(id)re;
 
 @end
@@ -23,7 +24,13 @@
     NSLog(@"UIView -- 释放: %p", self);
 }
 
-- (void)handleSuccess:(id)re
+- (void)handleHeadSuccess:(NSHTTPURLResponse *)re
+{
+//    NSLog(@"handleSuccess:\n%@", [[NSString alloc] initWithData:re encoding:NSUTF8StringEncoding]);
+    NSLog(@"handleSuccess:\n%@", re.allHeaderFields);
+}
+
+- (void)handleGetSuccess:(id)re
 {
     NSLog(@"handleSuccess:\n%@", [[NSString alloc] initWithData:re encoding:NSUTF8StringEncoding]);
 }
@@ -47,15 +54,14 @@
     [super viewDidLoad];
     _showView = [UIView new];
 //    NSLog(@"%p", _showView);
-//    UIButton *btn;
-//    [btn addTarget:self action:@selector(inief) forControlEvents:UIControlEventAllEvents];
-//    UIControlTargetAction
 //    [FileAPIManager fetchFilesWithDirectoryPath:@"/admin" sorting:@"time" successHandle:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandle:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
 //    _showView = nil;
     
-//    [NSURL URLWithString:@"test" relativeToURL:[NSURL URLWithString:@"https://www.baidu.com/"]];
+    NSLog(@"%@", [NSURL URLWithString:@"/test" relativeToURL:[NSURL URLWithString:@"https://www.baidu.com/wokao/"]].absoluteString);
     
-    [AFHTTPSessionManager.shareManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
+    [AFHTTPSessionManager.shareManager callHead:@"https://www.baidu.com" params:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleHeadSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)]];
+    
+    [AFHTTPSessionManager.shareManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleGetSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
 }
 
 
