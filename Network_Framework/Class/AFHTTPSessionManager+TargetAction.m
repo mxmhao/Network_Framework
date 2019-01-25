@@ -21,7 +21,7 @@ id msgSendTargetActionWithDataForResult(id target, SEL action, id data) {
     return ((id (*)(id, SEL, id))objc_msgSend)(target, action, data);
 }
 
-@implementation AFHTTPSessionManager (CompletionHandler)
+@implementation AFHTTPSessionManager (TargetAction)
 
 static AFHTTPSessionManager *shareManager = nil;
 + (instancetype)shareManager
@@ -40,11 +40,11 @@ static AFHTTPSessionManager *shareManager = nil;
 }
 
 #pragma mark -
-- (nullable NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
-        URLString:(NSString *)URLString
-       parameters:(nullable id)parameters
-   uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgress
- downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgress
+- (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(nonnull NSString *)method
+        URLString:(nonnull NSString *)URLString
+       parameters:(id)parameters
+   uploadProgress:(void (^)(NSProgress * _Nonnull uploadProgress)) uploadProgress
+ downloadProgress:(void (^)(NSProgress * _Nonnull downloadProgress)) downloadProgress
       dataHandler:(HandlerTargetAction *)dataHandler
    successHandler:(HandlerTargetAction *)success
    failureHandler:(HandlerTargetAction *)failure
@@ -64,7 +64,7 @@ static AFHTTPSessionManager *shareManager = nil;
     NSURLSessionDataTask *task = [self dataTaskWithRequest:request
         uploadProgress:uploadProgress
       downloadProgress:downloadProgress
-     completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+     completionHandler:^(NSURLResponse * _Nonnull response, id responseObject, NSError *error) {
          if (MethodHead == method) {//HEAD方式特殊处理一下
              responseObject = response;
          }
@@ -93,7 +93,12 @@ static AFHTTPSessionManager *shareManager = nil;
     }
 }
 
-- (NSURLSessionDataTask *)callGet:(NSString *)URLString params:(NSDictionary *)params dataHandler:(HandlerTargetAction *)dataHandler successHandler:(HandlerTargetAction *)success failureHandler:(HandlerTargetAction *)failure progress:(void (^)(NSProgress * _Nonnull))downloadProgress
+- (NSURLSessionDataTask *)callGet:(nonnull NSString *)URLString
+                           params:(NSDictionary *)params
+                      dataHandler:(HandlerTargetAction *)dataHandler
+                   successHandler:(HandlerTargetAction *)success
+                   failureHandler:(HandlerTargetAction *)failure
+                         progress:(void (^)(NSProgress * _Nonnull))downloadProgress
 {
     return [self dataTaskWithHTTPMethod:@"GET" URLString:URLString parameters:params
                          uploadProgress:nil
@@ -104,7 +109,10 @@ static AFHTTPSessionManager *shareManager = nil;
 }
 
 static NSString *const MethodHead = @"HEAD";
-- (NSURLSessionDataTask *)callHead:(NSString *)URLString params:(NSDictionary *)params successHandler:(HandlerTargetAction *)success failureHandler:(HandlerTargetAction *)failure
+- (NSURLSessionDataTask *)callHead:(nonnull NSString *)URLString
+                            params:(NSDictionary *)params
+                    successHandler:(HandlerTargetAction *)success
+                    failureHandler:(HandlerTargetAction *)failure
 {
     return [self dataTaskWithHTTPMethod:MethodHead URLString:URLString parameters:params
                          uploadProgress:nil
@@ -114,7 +122,12 @@ static NSString *const MethodHead = @"HEAD";
                          failureHandler:failure];
 }
 
-- (NSURLSessionDataTask *)callPost:(NSString *)URLString params:(NSDictionary *)params dataHandler:(HandlerTargetAction *)dataHandler successHandler:(HandlerTargetAction *)success failureHandler:(HandlerTargetAction *)failure progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
+- (NSURLSessionDataTask *)callPost:(nonnull NSString *)URLString
+                            params:(NSDictionary *)params
+                       dataHandler:(HandlerTargetAction *)dataHandler
+                    successHandler:(HandlerTargetAction *)success
+                    failureHandler:(HandlerTargetAction *)failure
+                          progress:(void (^)(NSProgress * _Nonnull))uploadProgress
 {
     return [self dataTaskWithHTTPMethod:@"POST" URLString:URLString parameters:params
                          uploadProgress:uploadProgress
@@ -124,7 +137,11 @@ static NSString *const MethodHead = @"HEAD";
                          failureHandler:failure];
 }
 
-- (NSURLSessionDataTask *)callPut:(NSString *)URLString params:(NSDictionary *)params dataHandler:(HandlerTargetAction *)dataHandler successHandler:(HandlerTargetAction *)success failureHandler:(HandlerTargetAction *)failure
+- (NSURLSessionDataTask *)callPut:(nonnull NSString *)URLString
+                           params:(NSDictionary *)params
+                      dataHandler:(HandlerTargetAction *)dataHandler
+                   successHandler:(HandlerTargetAction *)success
+                   failureHandler:(HandlerTargetAction *)failure
 {
     return [self dataTaskWithHTTPMethod:@"PUT" URLString:URLString parameters:params
                          uploadProgress:nil
@@ -134,11 +151,11 @@ static NSString *const MethodHead = @"HEAD";
                          failureHandler:failure];
 }
 
-- (nullable NSURLSessionDataTask *)callPatch:(NSString *)URLString
-                                      params:(nullable NSDictionary *)params
-                                 dataHandler:(nullable HandlerTargetAction *)dataHandler
-                              successHandler:(nullable HandlerTargetAction *)success
-                              failureHandler:(nullable HandlerTargetAction *)failure
+- (NSURLSessionDataTask *)callPatch:(nonnull NSString *)URLString
+                             params:(NSDictionary *)params
+                        dataHandler:(HandlerTargetAction *)dataHandler
+                     successHandler:(HandlerTargetAction *)success
+                     failureHandler:(HandlerTargetAction *)failure
 {
     return [self dataTaskWithHTTPMethod:@"PATCH" URLString:URLString parameters:params
                          uploadProgress:nil
@@ -148,11 +165,11 @@ static NSString *const MethodHead = @"HEAD";
                          failureHandler:failure];
 }
 
-- (nullable NSURLSessionDataTask *)callDelete:(NSString *)URLString
-                                       params:(nullable NSDictionary *)params
-                                  dataHandler:(nullable HandlerTargetAction *)dataHandler
-                               successHandler:(nullable HandlerTargetAction *)success
-                               failureHandler:(nullable HandlerTargetAction *)failure
+- (NSURLSessionDataTask *)callDelete:(nonnull NSString *)URLString
+                              params:(NSDictionary *)params
+                         dataHandler:(HandlerTargetAction *)dataHandler
+                      successHandler:(HandlerTargetAction *)success
+                      failureHandler:(HandlerTargetAction *)failure
 {
     return [self dataTaskWithHTTPMethod:@"DELETE" URLString:URLString parameters:params
                          uploadProgress:nil
@@ -164,7 +181,7 @@ static NSString *const MethodHead = @"HEAD";
 
 //----------------------------------------------------------------------
 #pragma mark -
-- (NSURLSessionDataTask *)GET:(NSString *)URLString
+- (NSURLSessionDataTask *)GET:(nonnull NSString *)URLString
                    parameters:(id)parameters
                      progress:(void (^)(NSProgress * _Nonnull))downloadProgress
             completionHandler:(XM_AFCompletionHandler)completionHandler
@@ -172,7 +189,7 @@ static NSString *const MethodHead = @"HEAD";
     return [self dataTaskWithHTTPMethod:@"GET" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:downloadProgress completionHandler:completionHandler];
 }
 
-- (NSURLSessionDataTask *)POST:(NSString *)URLString
+- (NSURLSessionDataTask *)POST:(nonnull NSString *)URLString
                     parameters:(id)parameters
                       progress:(void (^)(NSProgress * _Nonnull))uploadProgress
              completionHandler:(XM_AFCompletionHandler)completionHandler
@@ -180,42 +197,41 @@ static NSString *const MethodHead = @"HEAD";
     return [self dataTaskWithHTTPMethod:@"POST" URLString:URLString parameters:parameters uploadProgress:uploadProgress downloadProgress:nil completionHandler:completionHandler];
 }
 
-- (NSURLSessionDataTask *)HEAD:(NSString *)URLString
+- (NSURLSessionDataTask *)HEAD:(nonnull NSString *)URLString
                     parameters:(id)parameters
              completionHandler:(XM_AFCompletionHandler)completionHandler
 {
     return [self dataTaskWithHTTPMethod:@"HEAD" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:nil completionHandler:completionHandler];
 }
 
-- (NSURLSessionDataTask *)PUT:(NSString *)URLString
+- (NSURLSessionDataTask *)PUT:(nonnull NSString *)URLString
                    parameters:(id)parameters
             completionHandler:(XM_AFCompletionHandler)completionHandler
 {
     return [self dataTaskWithHTTPMethod:@"PUT" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:nil completionHandler:completionHandler];
 }
 
-- (NSURLSessionDataTask *)PATCH:(NSString *)URLString
+- (NSURLSessionDataTask *)PATCH:(nonnull NSString *)URLString
                      parameters:(id)parameters
               completionHandler:(XM_AFCompletionHandler)completionHandler
 {
     return [self dataTaskWithHTTPMethod:@"PATCH" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:nil completionHandler:completionHandler];
 }
 
-- (NSURLSessionDataTask *)DELETE:(NSString *)URLString
+- (NSURLSessionDataTask *)DELETE:(nonnull NSString *)URLString
                       parameters:(id)parameters
                completionHandler:(XM_AFCompletionHandler)completionHandler
 {
     return [self dataTaskWithHTTPMethod:@"DELETE" URLString:URLString parameters:parameters uploadProgress:nil downloadProgress:nil completionHandler:completionHandler];
 }
 
-- (nullable NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
-    URLString:(NSString *)URLString
-    parameters:(nullable id)parameters
-    uploadProgress:(nullable void (^)(NSProgress *uploadProgress)) uploadProgress
-    downloadProgress:(nullable void (^)(NSProgress *downloadProgress)) downloadProgress
-    completionHandler:(nullable XM_AFCompletionHandler)completionHandler
+- (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(nonnull NSString *)method
+    URLString:(nonnull NSString *)URLString
+    parameters:(id)parameters
+    uploadProgress:(void (^)(NSProgress * _Nonnull uploadProgress)) uploadProgress
+    downloadProgress:(void (^)(NSProgress * _Nonnull downloadProgress)) downloadProgress
+    completionHandler:(XM_AFCompletionHandler)completionHandler
 {
-    //数据加密也可以放在这里
     NSError *serializationError = nil;
     NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:URLString parameters:parameters error:&serializationError];
     if (serializationError) {
@@ -240,11 +256,11 @@ static NSString *const MethodHead = @"HEAD";
 }
 
 /*
-- (NSURLSessionUploadTask *)POST:(NSString *)URLString
+- (NSURLSessionUploadTask *)POST:(nonnull NSString *)URLString
                     parameters:(id)parameters
  constructingBodyWithBlock:(void (^)(id <AFMultipartFormData> formData))block
-  progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
- completionHandler:(nullable void (^)(NSURLResponse *response, id _Nullable responseObject, NSError * _Nullable error))completionHandler
+  progress:(void (^)(NSProgress * _Nonnull))uploadProgress
+ completionHandler:(void (^)(NSURLResponse *response, id _responseObject, NSError * _error))completionHandler
 {
     NSError *serializationError = nil;
     NSMutableURLRequest *request = [self.requestSerializer multipartFormRequestWithMethod:@"POST" URLString:URLString parameters:parameters constructingBodyWithBlock:block error:&serializationError];
