@@ -13,7 +13,7 @@
 #import <Foundation/Foundation.h>
 #import "DomainManager.h"
 
-@class HandlerTargetAction;
+@class XMTargetAction;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,18 +22,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSURLSessionDataTask *)fetchFilesWithDirectoryPath:(NSString *)path
                                     sorting:(nullable NSString *)sorting
-                              successHandle:(nullable HandlerTargetAction *)success
-                              failureHandle:(nullable HandlerTargetAction *)failure
+                              successHandle:(nullable XMTargetAction *)success
+                              failureHandle:(nullable XMTargetAction *)failure
     progress:(nullable void (^)(NSProgress * _Nonnull uploadProgress))uploadProgress;
 
 + (NSURLSessionDataTask *)deleteFile:(NSString *)file
-             successHandle:(nullable HandlerTargetAction *)success
-             failureHandle:(nullable HandlerTargetAction *)failure;
+             successHandle:(nullable XMTargetAction *)success
+             failureHandle:(nullable XMTargetAction *)failure;
 
 + (NSURLSessionDataTask *)renameFile:(NSString *)oldName
                    newName:(NSString *)newName
-             successHandle:(nullable HandlerTargetAction *)success
-             failureHandle:(nullable HandlerTargetAction *)failure;
+             successHandle:(nullable XMTargetAction *)success
+             failureHandle:(nullable XMTargetAction *)failure;
 
 @end
 

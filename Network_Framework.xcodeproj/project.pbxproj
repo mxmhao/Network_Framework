@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		39D223172172FEB70021A9FB /* HandlerTargetAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 39D223162172FEB70021A9FB /* HandlerTargetAction.m */; };
+		39D223172172FEB70021A9FB /* XMTargetAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 39D223162172FEB70021A9FB /* XMTargetAction.m */; };
 		BFFA8C5D7A2C6974D641CFD6 /* Pods_Network_Framework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DD3479B494AC3171C168DBD /* Pods_Network_Framework.framework */; };
 		CB6A26F92045584300C8E187 /* FileAPIManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6A26F82045584300C8E187 /* FileAPIManager.m */; };
 		CB6A27002047A3A400C8E187 /* DomainManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CB6A26FF2047A3A400C8E187 /* DomainManager.m */; };
@@ -23,8 +23,8 @@
 /* Begin PBXFileReference section */
 		167C884AFA9BADAC4BF7D586 /* Pods-Network_Framework.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Network_Framework.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Network_Framework/Pods-Network_Framework.debug.xcconfig"; sourceTree = "<group>"; };
 		1DD3479B494AC3171C168DBD /* Pods_Network_Framework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Network_Framework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		39D223152172FEB70021A9FB /* HandlerTargetAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HandlerTargetAction.h; sourceTree = "<group>"; };
-		39D223162172FEB70021A9FB /* HandlerTargetAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HandlerTargetAction.m; sourceTree = "<group>"; };
+		39D223152172FEB70021A9FB /* XMTargetAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XMTargetAction.h; sourceTree = "<group>"; };
+		39D223162172FEB70021A9FB /* XMTargetAction.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XMTargetAction.m; sourceTree = "<group>"; };
 		4DB8AB840B9BC761C857C6E7 /* Pods-Network_Framework.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Network_Framework.release.xcconfig"; path = "Pods/Target Support Files/Pods-Network_Framework/Pods-Network_Framework.release.xcconfig"; sourceTree = "<group>"; };
 		CB6A26F72045584300C8E187 /* FileAPIManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FileAPIManager.h; sourceTree = "<group>"; };
 		CB6A26F82045584300C8E187 /* FileAPIManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FileAPIManager.m; sourceTree = "<group>"; };
@@ -94,7 +94,7 @@
 		CB92B91A204545FD00CB0A28 /* Network_Framework */ = {
 			isa = PBXGroup;
 			children = (
-				CB92B9312045463B00CB0A28 /* Class */,
+				CB92B9312045463B00CB0A28 /* Classes */,
 				CB92B91B204545FD00CB0A28 /* AppDelegate.h */,
 				CB92B91C204545FD00CB0A28 /* AppDelegate.m */,
 				CB92B91E204545FD00CB0A28 /* ViewController.h */,
@@ -110,17 +110,17 @@
 			path = Network_Framework;
 			sourceTree = "<group>";
 		};
-		CB92B9312045463B00CB0A28 /* Class */ = {
+		CB92B9312045463B00CB0A28 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				39D223152172FEB70021A9FB /* HandlerTargetAction.h */,
-				39D223162172FEB70021A9FB /* HandlerTargetAction.m */,
+				39D223152172FEB70021A9FB /* XMTargetAction.h */,
+				39D223162172FEB70021A9FB /* XMTargetAction.m */,
 				CB6A26FE2047A3A400C8E187 /* DomainManager.h */,
 				CB6A26FF2047A3A400C8E187 /* DomainManager.m */,
 				CB6A27012047D92700C8E187 /* AFHTTPSessionManager+TargetAction.h */,
 				CB6A27022047D92700C8E187 /* AFHTTPSessionManager+TargetAction.m */,
 			);
-			path = Class;
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,7 +135,6 @@
 				CB92B915204545FD00CB0A28 /* Frameworks */,
 				CB92B916204545FD00CB0A28 /* Resources */,
 				E9903D820B25C24F4981A680 /* [CP] Embed Pods Frameworks */,
-				0643455C1783D24C6BD1E519 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -152,7 +151,7 @@
 		CB92B910204545FD00CB0A28 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = mxm;
 				TargetAttributes = {
 					CB92B917204545FD00CB0A28 = {
@@ -193,28 +192,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0643455C1783D24C6BD1E519 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Network_Framework/Pods-Network_Framework-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		E9903D820B25C24F4981A680 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-Network_Framework/Pods-Network_Framework-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Network_Framework/Pods-Network_Framework-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -223,7 +207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Network_Framework/Pods-Network_Framework-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Network_Framework/Pods-Network_Framework-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FAED28F674323B1D3A9F676D /* [CP] Check Pods Manifest.lock */ = {
@@ -256,7 +240,7 @@
 				CB92B92B204545FD00CB0A28 /* main.m in Sources */,
 				CB6A26F92045584300C8E187 /* FileAPIManager.m in Sources */,
 				CB6A27002047A3A400C8E187 /* DomainManager.m in Sources */,
-				39D223172172FEB70021A9FB /* HandlerTargetAction.m in Sources */,
+				39D223172172FEB70021A9FB /* XMTargetAction.m in Sources */,
 				CB92B91D204545FD00CB0A28 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -297,6 +281,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -304,6 +289,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -352,6 +338,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -359,6 +346,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;

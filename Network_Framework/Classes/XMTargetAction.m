@@ -6,16 +6,28 @@
 //  Copyright © 2018 mxm. All rights reserved.
 //
 
-#import "HandlerTargetAction.h"
+#import "XMTargetAction.h"
+//#import <objc/runtime.h>
+#import <objc/message.h>
 
-@implementation HandlerTargetAction
+@implementation XMTargetAction
 
 + (instancetype)target:(id)target action:(SEL)action
 {
-    HandlerTargetAction *hta = [self new];
+    XMTargetAction *hta = [self new];
     hta.target = target;
     hta.action = action;
     return hta;
+}
+
+- (instancetype)initWithTarget:(id)target action:(SEL)action
+{
+    self = [super init];
+    if (self) {
+        _target = target;
+        _action = action;
+    }
+    return self;
 }
 
 - (void)dealloc
@@ -25,11 +37,23 @@
 
 @end
 
-HandlerTargetAction * CreateHandler(id target, SEL action)
+XMTargetAction * XMCreateTA(id target, SEL action)
 {
-    return [HandlerTargetAction target:target action:action];
+    return [[XMTargetAction alloc] initWithTarget:target action:action];
 }
 
+//现在的方式
+//NS_INLINE
+void msgSendTargetActionWithData(id target, SEL action, id data) {
+    ((void (*)(id, SEL, id))objc_msgSend)(target, action, data);
+}
+
+//NS_INLINE
+id msgSendTargetActionWithDataForResult(id target, SEL action, id data) {
+    return ((id (*)(id, SEL, id))objc_msgSend)(target, action, data);
+}
+
+//以前的方式
 void callTargetActionWithData(id target, SEL action, id data)
 {
     if (nil == target) return;//action不存在时会报错误原因，这里就不判断nil了

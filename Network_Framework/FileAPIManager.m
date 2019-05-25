@@ -18,8 +18,8 @@ static NSString *const RenameFileAPI = @"api/rename_file";
 
 + (NSURLSessionDataTask *)fetchFilesWithDirectoryPath:(NSString *)path
                             sorting:(nullable NSString *)sorting
-                      successHandle:(nullable HandlerTargetAction *)success
-                      failureHandle:(nullable HandlerTargetAction *)failure
+                      successHandle:(nullable XMTargetAction *)success
+                      failureHandle:(nullable XMTargetAction *)failure
        progress:(nullable void (^)(NSProgress * _Nonnull))uploadProgress
 {
     //先检查参数是否正确
@@ -32,13 +32,13 @@ static NSString *const RenameFileAPI = @"api/rename_file";
     return [AFHTTPSessionManager.shareManager callPost:[DomainManager absoluteURLStringWithURLString:GetFilesAPI] params:params dataHandler:nil successHandler:success failureHandler:false progress:uploadProgress];
 }
 
-+ (NSURLSessionDataTask *)deleteFile:(NSString *)file successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
++ (NSURLSessionDataTask *)deleteFile:(NSString *)file successHandle:(XMTargetAction *)success failureHandle:(XMTargetAction *)failure
 {
     NSDictionary *params = @{@"path": file};
     return [AFHTTPSessionManager.shareManager callPost:[DomainManager absoluteURLStringWithURLString:DeleteFileAPI] params:params dataHandler:nil successHandler:success failureHandler:failure progress:nil];
 }
 
-+ (NSURLSessionDataTask *)renameFile:(NSString *)oldName newName:(NSString *)newName successHandle:(HandlerTargetAction *)success failureHandle:(HandlerTargetAction *)failure
++ (NSURLSessionDataTask *)renameFile:(NSString *)oldName newName:(NSString *)newName successHandle:(XMTargetAction *)success failureHandle:(XMTargetAction *)failure
 {
     NSDictionary *params = @{
         @"oldName": oldName,

@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface HandlerTargetAction : NSObject
+@interface XMTargetAction : NSObject
 
 @property (nonatomic, weak) id target;
 
@@ -31,16 +31,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)target:(id)target action:(SEL)action;
 
+- (instancetype)initWithTarget:(id)target action:(SEL)action;
+
 @end
 
 FOUNDATION_EXTERN_INLINE
-HandlerTargetAction * CreateHandler(id target, SEL action);
+XMTargetAction * XMCreateTA(id target, SEL action);
 
 //typedef struct objc_selector *SEL; 这个是SEL的定义
 FOUNDATION_EXTERN_INLINE
-void callTargetActionWithData(id target, SEL action, id data);
+void msgSendTargetActionWithData(id target, SEL action, id data);
 
 FOUNDATION_EXTERN_INLINE
-id callTargetActionWithDataForResult(id target, SEL action, id data);
+id msgSendTargetActionWithDataForResult(id target, SEL action, id data);
 
 NS_ASSUME_NONNULL_END

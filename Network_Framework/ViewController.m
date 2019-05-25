@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "HandlerTargetAction.h"
+#import "XMTargetAction.h"
 #import "AFHTTPSessionManager+TargetAction.h"
 
 @interface UIView (Hander)
@@ -59,9 +59,9 @@
     
     NSLog(@"%@", [NSURL URLWithString:@"/test" relativeToURL:[NSURL URLWithString:@"https://www.baidu.com/wokao/"]].absoluteString);
     
-    [AFHTTPSessionManager.shareManager callHead:@"https://www.baidu.com" params:nil successHandler:CreateHandler(_showView, @selector(handleHeadSuccess:)) failureHandler:CreateHandler(_showView, @selector(handleFailure:))];
+    [AFHTTPSessionManager.shareManager callHead:@"https://www.baidu.com" params:nil successHandler:XMCreateTA(_showView, @selector(handleHeadSuccess:)) failureHandler:XMCreateTA(_showView, @selector(handleFailure:))];
     
-    [AFHTTPSessionManager.shareManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[HandlerTargetAction target:_showView action:@selector(handleGetSuccess:)] failureHandler:[HandlerTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
+    [AFHTTPSessionManager.shareManager callGet:@"https://www.baidu.com" params:nil dataHandler:nil successHandler:[XMTargetAction target:_showView action:@selector(handleGetSuccess:)] failureHandler:[XMTargetAction target:_showView action:@selector(handleFailure:)] progress:nil];
 }
 
 
